@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Подбор рулевых реек</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#22C55E;--g2:#16A34A;--gl:rgba(34,197,94,.08);--gm:rgba(34,197,94,.15);--bdg:rgba(34,197,94,.22);--bg:#f8fafc;--wh:#ffffff;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bdr:rgba(0,0,0,.08);--bdr2:rgba(0,0,0,.14);--rm:8px;--rl:12px}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+@keyframes slR{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.3)}50%{box-shadow:0 0 0 7px rgba(34,197,94,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fa{animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+.scr{display:none}.scr.on{display:block}
+.nav{background:var(--wh);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:30}
+.nav-inner{max-width:680px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{width:30px;height:30px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-text{font-size:12.5px;font-weight:700;color:var(--tx);line-height:1.3}
+.logo-sub{color:var(--g2);font-size:11px;font-weight:600}
+.nav-links{display:flex;gap:4px}
+.nl{padding:6px 12px;border-radius:var(--rm);font-size:13px;font-weight:500;color:var(--tx2);background:none;border:none;cursor:pointer;transition:all .15s}
+.nl:hover{background:var(--gl);color:var(--g2)}
+.nl.act{background:var(--gl);color:var(--g2);border:1px solid var(--bdg)}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px}
+.card{background:var(--wh);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px}
+.card+.card{margin-top:14px}
+.inp{width:100%;height:44px;padding:0 14px;border:1px solid var(--bdr2);border-radius:var(--rm);font-size:14px;background:var(--bg);color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s}
+.inp:focus{border-color:var(--g);background:var(--wh);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.inp::placeholder{color:var(--tx3)}
+.inp-pw{width:100%;height:44px;padding:0 42px 0 14px;border:1px solid var(--bdr2);border-radius:var(--rm);font-size:14px;background:var(--bg);color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s}
+.inp-pw:focus{border-color:var(--g);background:var(--wh);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.vin-inp{flex:1;height:44px;padding:0 14px;border:1px solid var(--bdr2);border-radius:var(--rm);font-size:14px;letter-spacing:1.5px;text-transform:uppercase;background:var(--bg);color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s}
+.vin-inp:focus{border-color:var(--g);background:var(--wh);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.vin-inp::placeholder{letter-spacing:0;text-transform:none;color:var(--tx3)}
+.btn{height:44px;padding:0 18px;background:var(--g);color:#fff;border:none;border-radius:var(--rm);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--g2)}.btn:active{transform:scale(.97)}.btn:disabled{background:rgba(34,197,94,.3);cursor:default}
+.btn-full{width:100%;justify-content:center;height:46px;animation:glow 2.5s infinite}.btn-full:hover{animation:none}
+.btn-out{background:var(--wh);color:var(--tx2);border:1px solid var(--bdr2);width:100%;height:44px;border-radius:var(--rm);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.btn-out:hover{border-color:var(--g);color:var(--g2);background:var(--gl)}
+.btn-back{background:none;border:none;color:var(--tx2);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;margin-bottom:16px;transition:color .15s}
+.btn-back:hover{color:var(--g2)}
+.bok{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500;background:var(--gm);color:var(--g2)}
+.berr{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500;background:rgba(239,68,68,.1);color:#dc2626}
+.binf{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500;background:#eff6ff;color:#1d4ed8}
+.opt{width:100%;padding:11px 13px;background:var(--wh);border:1px solid var(--bdr);border-radius:var(--rm);text-align:left;cursor:pointer;font-size:13px;color:var(--tx);transition:all .18s;display:flex;align-items:center;gap:10px;animation:slR .25s cubic-bezier(.22,1,.36,1) both}
+.opt:nth-child(1){animation-delay:.03s}.opt:nth-child(2){animation-delay:.06s}.opt:nth-child(3){animation-delay:.09s}
+.opt:nth-child(4){animation-delay:.12s}.opt:nth-child(5){animation-delay:.15s}.opt:nth-child(6){animation-delay:.18s}
+.opt:hover{border-color:var(--g);background:var(--gl);transform:translateX(3px)}
+.ocode{font-size:11px;font-weight:700;color:var(--g2);margin-left:auto;background:var(--gm);padding:2px 8px;border-radius:10px;white-space:nowrap}
+.rcode{font-size:40px;font-weight:700;color:var(--tx);letter-spacing:-1.5px;line-height:1}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.pc{background:var(--gl);border:1px solid var(--bdg);border-radius:var(--rm);padding:12px 14px}
+.tips-wrap{border:1px solid var(--bdg);border-radius:var(--rm);overflow:hidden;margin-top:10px}
+.tip-row{padding:10px 13px;border-bottom:1px solid var(--bdg);font-size:12.5px;line-height:1.6;display:flex;gap:10px;color:var(--tx)}
+.tip-row:last-child{border-bottom:none}
+.tip-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.say-box{background:var(--bg);border:1px solid var(--bdg);border-radius:var(--rm);padding:10px 14px;margin-top:10px;display:flex;gap:10px;align-items:flex-start}
+.pb{display:flex;gap:5px;margin-bottom:16px}
+.ps{height:3px;flex:1;border-radius:2px;background:var(--bdr);transition:background .4s}
+.ps.d{background:var(--g)}
+.srow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.scard{background:var(--gl);border:1px solid var(--bdg);border-radius:var(--rm);padding:13px 15px;animation:scaleIn .3s cubic-bezier(.22,1,.36,1) both}
+.hi{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr);animation:fadeUp .3s cubic-bezier(.22,1,.36,1) both}
+.hi:last-child{border-bottom:none}
+.cc{background:var(--gl);border:1px solid var(--bdg);border-radius:var(--rm);padding:9px 11px}
+.lbl{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.nc{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:#fffbeb;border:1px solid #fde68a;border-radius:20px;font-size:11px;color:#92400e;margin-top:5px}
+.chat-box{display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px}
+.chat-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:10px}
+.msg-ai{max-width:85%;padding:10px 14px;background:var(--bg);border:1px solid var(--bdr);border-radius:var(--rl);border-bottom-left-radius:4px;font-size:13.5px;line-height:1.6;white-space:pre-wrap}
+.msg-user{max-width:85%;padding:10px 14px;background:var(--g);color:#fff;border-radius:var(--rl);border-bottom-right-radius:4px;font-size:13.5px;line-height:1.6;align-self:flex-end}
+.chat-hints{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.hint{padding:6px 12px;background:var(--wh);border:1px solid var(--bdg);border-radius:20px;font-size:12px;color:var(--g2);cursor:pointer;transition:all .15s}
+.hint:hover{background:var(--gm)}
+.chat-in{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--bdr);margin-top:auto}
+.spinner{width:18px;height:18px;border:2px solid var(--bdg);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-steering-wheel" style="font-size:16px;color:#fff"></i></div>
+      <div class="logo-text">Подбор рейки<br><span class="logo-sub">для партнёра Сероба</span></div>
+    </div>
+    <div class="nav-links">
+      <button class="nl act" id="n0" onclick="nav(0)">По VIN</button>
+      <button class="nl" id="n1" onclick="nav(1)">Каталог</button>
+      <button class="nl" id="n2" onclick="nav(2)">✦ ИИ</button>
+    </div>
+  </div>
+</nav>
+
+<!-- LOGIN -->
+<div id="pg-login" class="scr on">
+  <div style="min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:20px;background:var(--gl)">
+    <div style="width:100%;max-width:340px;animation:scaleIn .38s cubic-bezier(.22,1,.36,1)">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="width:66px;height:66px;background:var(--g);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:glow 2.5s infinite">
+          <i class="ti ti-lock" style="font-size:28px;color:#fff"></i>
+        </div>
+        <p style="font-size:20px;font-weight:700;color:var(--tx);margin-bottom:4px">Вход</p>
+        <p style="font-size:13px;color:var(--tx2)">Каталог дропшиппера</p>
+      </div>
+      <label style="font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:7px">Пароль</label>
+      <div style="position:relative;margin-bottom:14px">
+        <input type="password" class="inp-pw" id="pw" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')login()">
+        <button onclick="tpw()" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--tx3);font-size:17px;padding:0"><i id="pei" class="ti ti-eye"></i></button>
+      </div>
+      <p id="perr" style="font-size:12px;color:#dc2626;margin-bottom:10px;display:none">Неверный пароль</p>
+      <button class="btn btn-full" onclick="login()"><i class="ti ti-arrow-right" style="font-size:15px;vertical-align:-2px"></i> Войти</button>
+      <p style="text-align:center;font-size:12px;color:var(--tx3);margin-top:12px">Для партнёров — обратитесь к менеджеру</p>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: VIN -->
+<div id="pg-vin" class="scr">
+  <div id="sc-main" class="scr on">
+    <div class="wrap fa">
+      <div class="srow">
+        <div class="scard"><p style="font-size:11px;color:var(--tx3);margin-bottom:4px">Запросов сегодня</p><p style="font-size:24px;font-weight:700;color:var(--tx)" id="cnt">0</p></div>
+        <div class="scard"><p style="font-size:11px;color:var(--tx3);margin-bottom:4px">Позиций на складе</p><p style="font-size:24px;font-weight:700;color:var(--g)" id="total-cnt">...</p></div>
+      </div>
+      <p class="lbl">Подбор по VIN</p>
+      <div class="card">
+        <div style="display:flex;gap:10px">
+          <input type="text" class="vin-inp" id="vi" maxlength="17" placeholder="Введите VIN (17 символов)" oninput="ov(this)" onkeydown="if(event.key==='Enter')go()">
+          <button class="btn" id="gb" onclick="go()" disabled><i class="ti ti-search"></i>Найти</button>
+        </div>
+        <div id="vh" style="margin-top:10px;min-height:20px"></div>
+      </div>
+      <p class="lbl" style="margin-top:16px">Последние запросы</p>
+      <div id="hl"><p style="font-size:13px;color:var(--tx3)">Ещё не было запросов</p></div>
+    </div>
+  </div>
+  <div id="sc-q" class="scr">
+    <div class="wrap fa">
+      <button class="btn-back" onclick="gs('sc-main')"><i class="ti ti-arrow-left" style="font-size:15px"></i>Назад</button>
+      <div id="pb" class="pb"></div>
+      <div id="qi" style="margin-bottom:10px"></div>
+      <div id="qc"></div>
+    </div>
+  </div>
+  <div id="sc-res" class="scr">
+    <div class="wrap fa" id="rb"></div>
+  </div>
+</div>
+
+<!-- PAGE: CATALOG -->
+<div id="pg-cat" class="scr">
+  <div class="wrap fa" id="cb"></div>
+</div>
+
+<!-- PAGE: AI -->
+<div id="pg-ai" class="scr">
+  <div class="wrap">
+    <div style="margin-bottom:14px">
+      <p style="font-size:17px;font-weight:700;color:var(--tx)">✦ Спросить ИИ</p>
+      <p style="font-size:13px;color:var(--tx2);margin-top:3px">Знает все рейки и видит актуальный остаток со склада</p>
+    </div>
+    <div class="card chat-box">
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg-ai">Привет! Спроси меня про любую рейку — марку, модель, год. Подберу и скажу что ответить клиенту. Также вижу актуальный остаток из Google Sheets.</div>
+      </div>
+      <div id="chat-hints" class="chat-hints">
+        <button class="hint" onclick="fillChat('BMW E46 2003 задний привод')">BMW E46 2003</button>
+        <button class="hint" onclick="fillChat('Focus 2 гидро или ЭУР?')">Focus 2 гидро?</button>
+        <button class="hint" onclick="fillChat('Touareg 2012 какая рейка?')">Touareg 2012</button>
+        <button class="hint" onclick="fillChat('Octavia 2010 что взять?')">Octavia 2010</button>
+      </div>
+      <div class="chat-in">
+        <input type="text" class="inp" id="chat-inp" placeholder="Марка, модель, год или вопрос..." style="flex:1" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn" onclick="sendChat()" id="chat-btn">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PW = 'Zero+igm777'
+const SHEET_ID = '1LgOzjfN3fO9sg6gYTiJQDqQ7fspHhapiTKEfWVV0c_I'
+let H = [], N = 0, RACKS = []
+
+const PR = {
+  'СК':{d:24000,r:27000},'3Т':{d:32000,r:36000},'БК':{d:43500,r:49000},'КР':{d:47000,r:53000},
+  'В8':{d:53800,r:60000},'G4':{d:13500,r:17000},'В5':{d:14500,r:18000},'Sh+':{d:26000,r:30000},
+  'Е46+':{d:15900,r:19000},'Е46-':{d:21200,r:25000},'E90':{d:24400,r:28000},'E90 ЭУР':{d:49000,r:56000},
+  'E60':{d:22000,r:26000},'F20/F30':{d:35000,r:40000},'F10':{d:38000,r:44000},'F20/F21':{d:33000,r:38000},
+  'X3 E83+D':{d:28000,r:33000},'X3 E83-D':{d:24000,r:29000},
+  'W168':{d:12000,r:15000},'W169':{d:16000,r:20000},'W246':{d:28000,r:33000},
+  'W203':{d:15000,r:18500},'W203-D':{d:17000,r:21000},
+  'W204':{d:21500,r:26000},'W204+D':{d:26900,r:32000},'W205':{d:38000,r:44000},
+  'W210':{d:16000,r:20000},'W210+D':{d:19000,r:23000},'W211+D':{d:22000,r:27000},
+  'W212':{d:32000,r:38000},'W212 4x4':{d:85000,r:95000,note:'Под заказ 7–14 дней'},
+  'W163':{d:18000,r:22000},'W164':{d:24000,r:29000},
+  'XC70':{d:30000,r:35000},'V70':{d:32000,r:37000},
+  'FF':{d:12400,r:16000},'FF1':{d:12000,r:15500},'FFCM':{d:15100,r:19000},
+  'FF3':{d:45200,r:52000},'FM3':{d:18000,r:22000},'FM4':{d:28000,r:33000},
+  'FR3+':{d:18000,r:22000},'FR3-':{d:16500,r:20000},'XSP':{d:13100,r:17000},
+  'C2/C3':{d:18200,r:22000},'С5':{d:14600,r:18000},'С5 X7':{d:18000,r:22000},
+  '207':{d:23200,r:27000},'407':{d:17200,r:21000},'407-D':{d:15400,r:19000},
+  '406':{d:13000,r:16500},'607':{d:20000,r:25000},'508':{d:35000,r:41000},
+  'SC':{d:10000,r:13500},'SC2/Meg2':{d:10000,r:14500},
+  'RL1':{d:10000,r:13000},'RL2':{d:14000,r:18000},'RL3':{d:31200,r:36000},
+  'LG1':{d:12000,r:15500},'LG2':{d:14000,r:18000},
+  'Trafic':{d:20000,r:25000},'Master 3':{d:22000,r:27000},
+  'OA/OZ пл.':{d:13100,r:17000},'OA/OZ шт.':{d:13100,r:17000},
+  'OVC':{d:17100,r:21000},'OVB':{d:12000,r:15500},'OAJ':{d:22000,r:27000},
+  'B6/B7':{d:15000,r:19000},'B6/B7-D':{d:18200,r:22000},
+  'А6С6':{d:24000,r:29000},'Q7':{d:35000,r:41000},'A4B8':{d:30000,r:36000},
+  'M35':{d:13600,r:17500},'M6 гидро':{d:12900,r:16500},'CX7':{d:25000,r:30000},
+  'Colt':{d:39200,r:45000}
+}
+
+const TP = {
+  'СК':{w:'ЭУР 2-я ген. Golf 5, Octavia A5 до 2009, Touran 1, Jetta 5.',cl:'Octavia 2012+ → уже 3Т!',say:'Есть СК. Уточни год.'},
+  '3Т':{w:'ЭУР 3-я ген. Golf 5-6, Octavia с 2009, Yeti, Touran 2.',cl:'До 2009 Octavia = СК, с 2009 = 3Т.',say:'Есть 3Т.'},
+  'БК':{w:'ZF белая крышка. Passat B6-B7, Tiguan 1 с 2011, CC, Sharan 2.',cl:'Tiguan до 2011 → 3Т. Sharan 1 → Sh+.',say:'Есть БК.'},
+  'КР':{w:'MQB. Golf 7/8, Octavia A7/A8 (2013+), Tiguan 2, Jetta 6, Superb 3.',cl:'Superb 3 = КР, не В8!',say:'Есть КР.'},
+  'В8':{w:'Passat B8 (2015+), Superb 3 B8. Артикул 5Q0.',cl:'Passat B7 — там БК.',say:'Есть В8.'},
+  'G4':{w:'Golf 4 / Bora / Octavia A4 — ГУР.',cl:'Golf 5 уже ЭУР = СК/3Т.',say:'Есть G4. ГУР.'},
+  'В5':{w:'Audi A4 B5 / VW Passat B5 — гидравлика.',cl:'A4 B6 — другая (KOYO).',say:'Есть В5. ГУР.'},
+  'Sh+':{w:'Sharan 1 рестайлинг (с 2003) / Alhambra 1 — ГУР.',cl:'Sharan 2 → БК.',say:'Есть Sh+.'},
+  'Е46+':{w:'BMW E46, ZF, серый шильдик. 3.5 оборота. Дешевле.',cl:'ZF и TRW НЕ взаимозаменяемы! Серый = ZF.',say:'Есть Е46+. Серый шильдик ZF.'},
+  'Е46-':{w:'BMW E46, TRW, жёлтый/фиолетовый шильдик. 3 оборота. Дороже.',cl:'Жёлтый = TRW = Е46-.',say:'Есть Е46-.'},
+  'E90':{w:'BMW E90/91/92/93, E87, X1 E84. Гидравлика. ZF и TRW оба встречаются.',cl:'ZF и TRW НЕ взаимозаменяемы! Уточни у клиента.',say:'Есть E90. Спроси: ZF или TRW?'},
+  'E90 ЭУР':{w:'BMW E90 с электроусилителем — редкая версия.',cl:'Гидро E90 ≠ ЭУР E90.',say:'Есть E90 ЭУР.'},
+  'X3 E83+D':{w:'BMW X3 E83 с сервотроником (датчик на рейке).',cl:'Не взаимозаменяем с E83-D!',say:'Есть X3 E83+D.'},
+  'X3 E83-D':{w:'BMW X3 E83 без сервотроника.',cl:'Не взаимозаменяем с E83+D!',say:'Есть X3 E83-D.'},
+  'W203':{w:'Mercedes C W203 (2000-2007) задний. Без датчика.',cl:'4Matic нет! С датчиком = W203-D.',say:'Есть W203. Уточни: датчик есть?'},
+  'W203-D':{w:'Mercedes C W203 с датчиком угла поворота.',cl:'4Matic нет в каталоге.',say:'Есть W203-D.'},
+  'W204':{w:'Mercedes C W204 (2007-2014) без датчика. 4Matic = такая же.',cl:'С датчиком = W204+D (дороже).',say:'Есть W204. Датчик есть?'},
+  'W204+D':{w:'Mercedes C W204 с датчиком угла поворота.',cl:'Без датчика = W204.',say:'Есть W204+D.'},
+  'W212':{w:'Mercedes E W212 (2009-2016) задний привод.',cl:'W212 4Matic — под заказ 7-14 дней!',say:'Есть W212.'},
+  'W212 4x4':{w:'Mercedes E W212 4Matic — под заказ.',cl:'Закуп ~85к, 7-14 дней.',say:'W212 4Matic под заказ 7-14 дней.'},
+  'W164':{w:'ML W164 / R W251 (2005-2012) — только ГУР.',cl:'W164 ЭУР не продаём.',say:'Есть W164. ГУР.'},
+  'XC70':{w:'Volvo S60/S80/V60/XC60/XC70 — без кронштейна.',cl:'XC60 = XC70 рейка!',say:'Есть XC70.'},
+  'V70':{w:'Volvo V70/XC90 / S60 до 2007 — с кронштейном.',cl:'S60 до 2007 → V70. После → XC70.',say:'Есть V70.'},
+  'FFCM':{w:'Ford Focus 2 ГИДРО / C-Max до 2011 / Volvo V50.',cl:'Focus 3 ЭУР = FF3, не FFCM!',say:'Есть FFCM. Focus 2 гидро.'},
+  'FF3':{w:'Ford Focus 3 ЭУР / Kuga 2 / C-Max 2012+.',cl:'Гидро Focus 2 = FFCM.',say:'Есть FF3. ЭУР версия.'},
+  'FM4':{w:'Mondeo 4 / S-Max / Galaxy — одна рейка.',cl:'Mondeo 4 = S-Max = Galaxy.',say:'Есть FM4.'},
+  'FR3+':{w:'Peugeot/C4 БЕЗ ESP. 3+ оборота.',cl:'Определяется ТОЛЬКО по ESP!',say:'FR3+. Нет ESP.'},
+  'FR3-':{w:'Peugeot/C4 С ESP. 3- оборота.',cl:'ESP есть = FR3- всегда.',say:'FR3-. Есть ESP.'},
+  'OA/OZ пл.':{w:'Opel Astra/Zafira. Белый бачок = ZF = планка.',cl:'Белый → ZF → планка. Зелёный → TRW → штуцера.',say:'Есть OA/OZ планка.'},
+  'OA/OZ шт.':{w:'Opel Astra/Zafira. Зелёный бачок = TRW = штуцера.',cl:'Зелёный → штуцера.',say:'Есть OA/OZ штуцера.'},
+  'OAJ':{w:'Opel Astra J / Insignia ЭУР.',cl:'Нужна адаптация ЭБУ!',say:'Есть OAJ. Нужна адаптация.'},
+  'B6/B7':{w:'Audi A4 B6/B7 без датчика. ТОЛЬКО KOYO!',cl:'ZF не существует. С датчиком = B6/B7-D.',say:'Есть B6/B7. Только KOYO.'},
+  'B6/B7-D':{w:'Audi A4 B6/B7 с датчиком. ТОЛЬКО KOYO!',cl:'Только KOYO.',say:'Есть B6/B7-D.'},
+  'Q7':{w:'Audi Q7 / Touareg 1 / Cayenne 1 (до 2010) — одна рейка!',cl:'Touareg 2 (2010+) ≠ Q7!',say:'Есть Q7. Touareg до 2010 подходит.'}
+}
+
+const WMI = {
+  WAU:'Audi',WA1:'Audi',WBA:'BMW',WBS:'BMW',WBX:'BMW',WBY:'BMW',X4X:'BMW',
+  WDB:'Mercedes',WDD:'Mercedes',WDC:'Mercedes',WDF:'Mercedes',
+  WVW:'VW',WV2:'VW',WV1:'VW',WVG:'VW',TMB:'Skoda',XW8:'Skoda',
+  VSS:'Seat',VS6:'Seat',YV1:'Volvo',YV4:'Volvo',
+  VF1:'Renault',VF8:'Renault',VF6:'Citroën',VF7:'Citroën',VF3:'Peugeot',
+  WF0:'Ford',WF2:'Ford',X9F:'Ford',W0L:'Opel',W0V:'Opel',XUF:'Opel',
+  JMZ:'Mazda',JM1:'Mazda',XMC:'Mitsubishi',JA3:'Mitsubishi'
+}
+const YR = {
+  '1':2001,'2':2002,'3':2003,'4':2004,'5':2005,'6':2006,'7':2007,'8':2008,'9':2009,
+  A:2010,B:2011,C:2012,D:2013,E:2014,F:2015,G:2016,H:2017,J:2018,K:2019,
+  L:2020,M:2021,N:2022,P:2023,R:2024,S:2025
+}
+
+function dv(v) {
+  const brand = WMI[v.substring(0,3)] || WMI[v.substring(0,2)] || null
+  return { vin:v, brand, year: YR[v[9]] || null, known: !!brand }
+}
+
+// Google Sheets
+async function loadSheets() {
+  try {
+    const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv'
+    const r = await fetch(url), t = await r.text()
+    const rows = t.split('\n').map(l => l.split(',').map(c => c.replace(/^"|"$/g,'').trim()))
+    RACKS = []
+    for (const row of rows) {
+      const name = (row[0]||'').trim()
+      if (!name || !name.match(/рейк/i)) continue
+      const m = name.match(/[""«]([^""»\n]{1,20})[""»]/)
+      if (!m) continue
+      const code = m[1].trim()
+      const inStock = parseInt(row[1]) || 0
+      const d = parseInt((row[3]||'').replace(/\D/g,'')) || 0
+      const r2 = parseInt((row[4]||'').replace(/\D/g,'').split('-')[0]) || 0
+      if (d > 0 && PR[code]) { PR[code].d = d; if (r2 > 0) PR[code].r = r2 }
+      if (inStock >= 0) RACKS.push({ code, inStock })
+    }
+    const total = RACKS.filter(r => r.inStock > 0).length
+    const el = document.getElementById('total-cnt')
+    if (el) el.textContent = total + ' позиций'
+  } catch(e) { console.warn('Sheets error', e) }
+}
+
+function getStock(code) {
+  const r = RACKS.find(r => r.code.toUpperCase() === code.toUpperCase())
+  return r ? r.inStock : null
+}
+
+// Navigation
+function nav(i) {
+  ['pg-vin','pg-cat','pg-ai'].forEach((p,j) => {
+    document.getElementById(p).classList.toggle('on', j===i)
+    document.getElementById('n'+j).classList.toggle('act', j===i)
+  })
+  if (i === 1) renderCat()
+}
+function gs(id) {
+  document.querySelectorAll('#pg-vin .scr').forEach(s => s.classList.remove('on'))
+  const el = document.getElementById(id)
+  if (el) { el.classList.add('on'); const b = el.querySelector('.wrap'); if (b) { b.classList.remove('fa'); void b.offsetWidth; b.classList.add('fa') } }
+}
+function tpw() {
+  const i = document.getElementById('pw'), ic = document.getElementById('pei')
+  i.type = i.type === 'password' ? 'text' : 'password'
+  ic.className = i.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off'
+}
+function login() {
+  if (document.getElementById('pw').value === PW) {
+    document.getElementById('perr').style.display = 'none'
+    document.getElementById('pg-login').classList.remove('on')
+    document.getElementById('pg-vin').classList.add('on')
+    loadSheets()
+  } else {
+    document.getElementById('perr').style.display = 'block'
+  }
+}
+function fmt(n) { return n ? n.toLocaleString('ru-RU') : '—' }
+
+// VIN logic
+let ST = { vin:null, info:null, answers:{} }, QD = 0
+
+function ov(el) {
+  const v = el.value.toUpperCase().replace(/[^A-Z0-9]/g,''); el.value = v
+  const btn = document.getElementById('gb'), h = document.getElementById('vh')
+  if (v.length === 17) {
+    const i = dv(v); btn.disabled = false
+    h.innerHTML = i.brand
+      ? '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + i.brand + (i.year ? ' · ' + i.year + ' г.' : '') + '</span>'
+      : '<span class="binf"><i class="ti ti-help" style="font-size:12px"></i>Марка не распознана — выберем вручную</span>'
+  } else {
+    btn.disabled = true
+    h.innerHTML = v.length > 0 ? '<span style="font-size:12px;color:var(--tx3)">' + v.length + '/17</span>' : ''
+  }
+}
+
+function go() {
+  const v = document.getElementById('vi').value.toUpperCase().replace(/[^A-Z0-9]/g,'')
+  if (v.length !== 17) return
+  ST = { vin:v, info:dv(v), answers:{} }; N++
+  document.getElementById('cnt').textContent = N
+  document.getElementById('vi').value = ''
+  document.getElementById('vh').innerHTML = ''
+  document.getElementById('gb').disabled = true
+  QD = 0; rq()
+}
+
+function getRC(info, ans) {
+  if (!info || !info.brand) return { candidates:[], questions:[], unknown:true }
+  const yr = info.year || 2010, br = info.brand
+  let c = [], q = []
+  const ask = (id,t,o) => ({ id, text:t, options:o })
+  const opt = (v,l,cd) => ({ value:v, label:l, code:cd })
+
+  if (['VW','Skoda','Seat'].includes(br)) {
+    if (yr >= 2016) {
+      if (!ans.vm) q = [ask('vm','Уточните модель:',[opt('ok7','Octavia A7/A8, Golf 7/8, Jetta 6, Superb 3, Tiguan 2','КР'),opt('pb8','Passat B8','В8'),opt('ot','Другая',null)])]
+      else c = [ans.vm === 'pb8' ? {code:'В8'} : {code:'КР'}]
+    } else if (yr >= 2013) {
+      if (!ans.vm13) q = [ask('vm13','Модель:',[opt('ok7','Octavia A7, Golf 7/8, Jetta 6','КР'),opt('pb67','Passat B6/B7, Tiguan 1, CC, Sharan 2','БК'),opt('ot3','Touran / Golf 5-6 / Другой','3Т')])]
+      else { const m={ok7:{code:'КР'},pb67:{code:'БК'},ot3:{code:'3Т'}}; c = [m[ans.vm13]||{code:'КР'}] }
+    } else if (yr >= 2009) {
+      if (!ans.vm09) q = [ask('vm09','Модель:',[opt('pt','Passat B6-B7, Tiguan 1 с 2011, CC, Sharan 2','БК'),opt('go','Golf 5-6, Jetta, Octavia A5, Yeti, Touran','3Т')])]
+      else c = [ans.vm09 === 'pt' ? {code:'БК'} : {code:'3Т'}]
+    } else if (yr >= 2004) {
+      if (!ans.pw2) q = [ask('pw2','Тип усилителя руля?',[opt('g','ГУР — гидравлика',null),opt('e','ЭУР — электро',null)])]
+      else if (ans.pw2 === 'e') c = [{code:'СК'}]
+      else if (!ans.vgm) q = [ask('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+')])]
+      else c = [ans.vgm === 'sh' ? {code:'Sh+'} : {code:'G4'}]
+    } else c = [{code:'G4'}]
+
+  } else if (br === 'Audi') {
+    if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 / A6 C5 до 2005',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT / Q3 (ЭУР)',null)])]
+    else if (ans.am === 'b67') {
+      if (!ans.bs) q = [ask('bs','Датчик A4 B6/B7:',[opt('y','Есть датчик','B6/B7-D'),opt('n','Без датчика','B6/B7')])]
+      else c = [{code: ans.bs === 'y' ? 'B6/B7-D' : 'B6/B7', label:'ТОЛЬКО KOYO!'}]
+    } else {
+      const m = {b5:{code:'В5'},b8:{code:'A4B8'},c6:{code:'А6С6'},q7:{code:'Q7'},a3:{code:yr<2009?'СК':'3Т'}}
+      c = [m[ans.am]].filter(Boolean)
+    }
+
+  } else if (br === 'BMW' || br === 'BMW M') {
+    if (!ans.bm) q = [ask('bm','Серия BMW:',[opt('e46','E46 / E36 (задний привод)',null),opt('e90','E90/91 / E87 / X1 E84 / X3 E83',null),opt('e60','E60/E61 — 5 серия','E60'),opt('fs','F-серия (F30/F20/F10)',null)])]
+    else if (ans.bm === 'e46') {
+      if (!ans.e4l) q = [ask('e4l','Цвет шильдика на рейке:',[opt('gr','Серый/синий/чёрный — ZF (3.5 об., дешевле)','Е46+'),opt('ye','Жёлтый/фиолетовый — TRW (3 об., дороже)','Е46-'),opt('dk','Не знаю — оба',null)])]
+      else if (ans.e4l === 'gr') c = [{code:'Е46+'}]
+      else if (ans.e4l === 'ye') c = [{code:'Е46-'}]
+      else c = [{code:'Е46+'}, {code:'Е46-'}]
+    } else if (ans.bm === 'e90') {
+      if (!ans.e9t) q = [ask('e9t','Тип BMW:',[opt('g','E90/91/92/93 / E87 — Гидравлика ГУР','E90'),opt('e','E90 ЭУР — Электроусилитель','E90 ЭУР'),opt('x3','X3 E83 (2003-2010)',null),opt('x1','X1 E84 / E90 xDrive','E90')])]
+      else if (ans.e9t === 'g' || ans.e9t === 'x1') c = [{code:'E90'}]
+      else if (ans.e9t === 'e') c = [{code:'E90 ЭУР'}]
+      else if (ans.e9t === 'x3') {
+        if (!ans.e83s) q = [ask('e83s','Сервотроник на X3 E83 (датчик на рейке)?',[opt('y','Есть датчик → X3 E83+D','X3 E83+D'),opt('n','Без датчика → X3 E83-D','X3 E83-D')])]
+        else c = [{code: ans.e83s === 'y' ? 'X3 E83+D' : 'X3 E83-D'}]
+      }
+    } else if (ans.bm === 'e60') c = [{code:'E60'}]
+    else if (ans.bm === 'fs') {
+      if (!ans.fm) q = [ask('fm','Кузов:',[opt('f21','1 серия F20/F21','F20/F21'),opt('f30','3 серия F30','F20/F30'),opt('f10','5 серия F10','F10')])]
+      else { const m = {f21:{code:'F20/F21'},f30:{code:'F20/F30'},f10:{code:'F10'}}; c = [m[ans.fm]] }
+    }
+
+  } else if (br === 'Mercedes') {
+    if (!ans.mm) q = [ask('mm','Кузов Mercedes:',[opt('w168','A W168 (1997-2004)','W168'),opt('w169','A W169 / B W245 (2004-2012)','W169'),opt('w246','B W246 (2011+)','W246'),opt('w203','C W203 (2000-2007)',null),opt('w204','C W204 (2007-2014)',null),opt('w205','C W205 (2014+)','W205'),opt('w210','E W210 (1995-2002)',null),opt('w211','E W211 / CLS W219','W211+D'),opt('w212','E W212 (2009-2016)',null),opt('w163','ML W163 (1997-2005)','W163'),opt('w164','ML W164 / R W251','W164')])]
+    else if (ans.mm === 'w203') {
+      if (!ans.w3s) q = [ask('w3s','Датчик W203:',[opt('y','Есть датчик','W203-D'),opt('n','Без датчика','W203'),opt('4','4Matic — нет в каталоге',null)])]
+      else if (ans.w3s === '4') c = [{code:'⚠ нет', label:'W203 4Matic нет в каталоге'}]
+      else c = [{code: ans.w3s === 'y' ? 'W203-D' : 'W203'}]
+    } else if (ans.mm === 'w210') {
+      if (!ans.w0s) q = [ask('w0s','Датчик W210:',[opt('y','Есть датчик','W210+D'),opt('n','Без датчика','W210')])]
+      else c = [{code: ans.w0s === 'y' ? 'W210+D' : 'W210'}]
+    } else if (ans.mm === 'w204') {
+      if (!ans.w4s) q = [ask('w4s','Датчик W204?',[opt('y','Есть датчик','W204+D'),opt('n','Без датчика','W204')])]
+      else c = [{code: ans.w4s === 'y' ? 'W204+D' : 'W204'}]
+    } else if (ans.mm === 'w212') {
+      if (!ans.w2d) q = [ask('w2d','Привод W212:',[opt('r','Задний привод','W212'),opt('4','Полный 4Matic','W212 4x4')])]
+      else c = [{code: ans.w2d === '4' ? 'W212 4x4' : 'W212'}]
+    } else {
+      const m = {w168:{code:'W168'},w169:{code:'W169'},w246:{code:'W246'},w205:{code:'W205'},w211:{code:'W211+D'},w163:{code:'W163'},w164:{code:'W164'}}
+      c = [m[ans.mm]].filter(Boolean)
+    }
+
+  } else if (br === 'Volvo') {
+    if (yr <= 2007) {
+      if (!ans.vom) q = [ask('vom','Модель:',[opt('s60','S60/V70/XC90 2000-2007','V70'),opt('s40','S40/V40 до 2004','В5')])]
+      else c = [{code: ans.vom === 's40' ? 'В5' : 'V70'}]
+    } else if (yr <= 2016) {
+      if (!ans.vt) q = [ask('vt','Модель:',[opt('xc','S60/S80/V60/XC60/XC70 — без кронштейна','XC70'),opt('v7','V70/XC90 — с кронштейном','V70')])]
+      else c = [{code: ans.vt === 'v7' ? 'V70' : 'XC70'}]
+    } else c = [{code:'XC70'}]
+
+  } else if (br === 'Ford') {
+    if (!ans.fo) q = [ask('fo','Модель Ford:',[opt('f1','Focus 1 / Transit Connect до 2012','FF1'),opt('f2g','Focus 2 гидро / C-Max до 2011 / Volvo V50','FFCM'),opt('f3e','Focus 3 ЭУР / Kuga 2 / C-Max 2012+','FF3'),opt('fie','Fiesta / Fusion','FF'),opt('m3','Mondeo 3 (2000-2007)','FM3'),opt('m4','Mondeo 4 / S-Max / Galaxy','FM4')])]
+    else { const m = {f1:'FF1',f2g:'FFCM',f3e:'FF3',fie:'FF',m3:'FM3',m4:'FM4'}; c = [{code:m[ans.fo]}] }
+
+  } else if (br === 'Peugeot') {
+    if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/Partner/C4',null),opt('p207','207 / C3 Picasso ЭУР','207'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508')])]
+    else if (ans.pm === 'p3') {
+      if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+'),opt('d','Не знаю',null)])]
+      else { const code = ans.esp==='y'?'FR3-':ans.esp==='n'?'FR3+':null; c = code ? [{code}] : [{code:'FR3-'},{code:'FR3+'}] }
+    } else if (ans.pm === 'p407') {
+      if (!ans.p4s) q = [ask('p4s','Датчик 407:',[opt('y','Есть датчик','407-D'),opt('n','Без датчика','407')])]
+      else c = [{code: ans.p4s === 'y' ? '407-D' : '407'}]
+    } else {
+      const m = {p207:{code:'207'},p406:{code:'406'},p607:{code:'607'},p508:{code:'508'}}
+      c = [m[ans.pm]].filter(Boolean)
+    }
+
+  } else if (br === 'Citroën') {
+    if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009+)','207'),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7')])]
+    else if (ans.cm === 'c4') {
+      if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+')])]
+      else c = [{code: ans.esp === 'y' ? 'FR3-' : 'FR3+'}]
+    } else {
+      const m = {xsp:'XSP',c23:'C2/C3',ds3:'207',c5:'С5',c5x:'С5 X7'}
+      c = [{code: m[ans.cm]}]
+    }
+
+  } else if (br === 'Renault') {
+    if (!ans.rm) q = [ask('rm','Модель:',[opt('sc','Scenic 1 / Megane 1 до 2003','SC'),opt('sc2','Scenic 2 / Megane 2 (2002-2009)','SC2/Meg2'),opt('rl1','Laguna 1','RL1'),opt('rl2','Laguna 2','RL2'),opt('rl3','Laguna 3 / Latitude','RL3'),opt('lg1','Logan 1 / Sandero 1 до 2012','LG1'),opt('lg2','Logan рестайл 2012+ / Logan 2','LG2'),opt('tr','Trafic / Vivaro','Trafic'),opt('ms','Master 3','Master 3')])]
+    else { const m = {sc:'SC',sc2:'SC2/Meg2',rl1:'RL1',rl2:'RL2',rl3:'RL3',lg1:'LG1',lg2:'LG2',tr:'Trafic',ms:'Master 3'}; c = [{code:m[ans.rm]}] }
+
+  } else if (br === 'Opel') {
+    if (!ans.om) q = [ask('om','Модель:',[opt('ag','Astra G/H / Zafira A/B',null),opt('vc','Vectra C','OVC'),opt('vb','Vectra B','OVB'),opt('aj','Astra J / Insignia (нужна адаптация!)','OAJ')])]
+    else if (ans.om === 'ag') {
+      if (!ans.op) q = [ask('op','Цвет бачка ГУР:',[opt('z','Белый → ZF → планка','OA/OZ пл.'),opt('t','Зелёный → TRW → штуцера','OA/OZ шт.')])]
+      else c = [{code: ans.op === 'z' ? 'OA/OZ пл.' : 'OA/OZ шт.'}]
+    } else {
+      const m = {vc:{code:'OVC'},vb:{code:'OVB'},aj:{code:'OAJ'}}; c = [m[ans.om]].filter(Boolean)
+    }
+
+  } else if (br === 'Mazda') {
+    if (!ans.mam) q = [ask('mam','Модель:',[opt('bk','Mazda 3 BK (2002-2009)','M35'),opt('m6','Mazda 6 GG ГУР','M6 гидро'),opt('cx','Mazda CX-7','CX7')])]
+    else { const m = {bk:'M35',m6:'M6 гидро',cx:'CX7'}; c = [{code:m[ans.mam]}] }
+
+  } else if (br === 'Mitsubishi') {
+    c = [{code:'Colt'}]
+
+  } else return { candidates:[], questions:[], unknown:true }
+
+  return { candidates:c, questions:q }
+}
+
+function rq() {
+  const r = getRC(ST.info, ST.answers)
+  const qc = document.getElementById('qc'), qi = document.getElementById('qi'), pb = document.getElementById('pb')
+  qi.innerHTML = '<p class="lbl" style="margin-bottom:4px">' + ST.vin + '</p>'
+  if (r.unknown || !ST.info?.brand) {
+    const brands = ['VW','Skoda','Seat','Audi','BMW','Mercedes','Volvo','Ford','Peugeot','Citroën','Renault','Opel','Mazda','Mitsubishi']
+    let btns = ''
+    brands.forEach(b => { btns += '<button class="opt" style="width:auto;padding:7px 13px;font-size:12px;animation:none" onclick="sbr(\'' + b + '\')">' + b + '</button>' })
+    qc.innerHTML = '<div class="card" style="text-align:center;padding:24px"><i class="ti ti-help-circle" style="font-size:34px;color:var(--tx3)"></i><p style="font-size:15px;font-weight:600;margin:10px 0 6px">Марка не распознана</p><p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Выберите вручную:</p><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">' + btns + '</div></div>'
+    gs('sc-q'); return
+  }
+  if (r.questions.length > 0) {
+    let ps = ''
+    for (let i = 0; i < QD; i++) ps += '<div class="ps d"></div>'
+    ps += '<div class="ps"></div>'
+    pb.innerHTML = ps
+    const q0 = r.questions[0]
+    let opts = ''
+    q0.options.forEach(o => {
+      opts += '<button class="opt" onclick="pa(\'' + q0.id + '\',\'' + o.value + '\')">'
+      opts += '<i class="ti ti-chevron-right" style="font-size:14px;color:var(--tx3);flex-shrink:0"></i>'
+      opts += '<span>' + o.label + '</span>'
+      if (o.code) opts += '<span class="ocode">' + o.code + '</span>'
+      opts += '</button>'
+    })
+    qc.innerHTML = '<p style="font-size:15px;font-weight:600;margin-bottom:14px">' + q0.text + '</p><div style="display:flex;flex-direction:column;gap:7px">' + opts + '</div>'
+    QD++; gs('sc-q')
+  } else if (r.candidates.length > 0) {
+    addH(ST.vin, ST.info, r.candidates)
+    showRes(r.candidates)
+  } else {
+    qc.innerHTML = '<p style="color:var(--tx2)">Нет данных для этой конфигурации.</p>'
+    gs('sc-q')
+  }
+}
+
+function sbr(b) { ST.info = {...ST.info, brand:b, known:true}; ST.answers = {}; rq() }
+function pa(id, v) { ST.answers = {...ST.answers, [id]:v}; rq() }
+
+function showRes(cands) {
+  QD = 0
+  let h = '<button class="btn-back" onclick="gs(\'sc-main\');document.getElementById(\'vi\').value=\'\'"><i class="ti ti-arrow-left" style="font-size:15px"></i>Новый подбор</button>'
+  cands.forEach(c => {
+    const pr = PR[c.code], tp = TP[c.code], no = c.code === '⚠ нет'
+    const stock = getStock(c.code)
+    h += '<div class="card" style="margin-bottom:12px;animation:scaleIn .3s cubic-bezier(.22,1,.36,1)">'
+    h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">'
+    h += '<div><div class="rcode">' + (no ? 'Нет' : c.code) + '</div>'
+    if (c.label) h += '<p style="font-size:12px;color:var(--tx2);margin-top:4px">' + c.label + '</p>'
+    if (pr && pr.note) h += '<div class="nc"><i class="ti ti-clock" style="font-size:11px"></i>' + pr.note + '</div>'
+    h += '</div>'
+    if (no) h += '<span class="berr"><i class="ti ti-x" style="font-size:12px"></i>Нет</span>'
+    else if (stock !== null) {
+      if (stock > 0) h += '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + stock + ' шт.</span>'
+      else h += '<span class="berr"><i class="ti ti-x" style="font-size:12px"></i>Нет в наличии</span>'
+    } else h += '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>В наличии</span>'
+    h += '</div>'
+    if (pr && !no) {
+      h += '<div class="pgrid"><div class="pc"><p style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Дроп цена</p>'
+      h += '<p style="font-size:22px;font-weight:700">' + fmt(pr.d) + ' ₽</p></div>'
+      h += '<div class="pc"><p style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Розница</p>'
+      h += '<p style="font-size:22px;font-weight:700;color:var(--g2)">' + fmt(pr.r) + ' ₽</p></div></div>'
+    }
+    if (tp) {
+      h += '<div class="tips-wrap">'
+      h += '<div class="tip-row"><i class="ti ti-info-circle" style="font-size:15px;color:var(--g);flex-shrink:0;margin-top:1px"></i><div><div class="tip-lbl" style="color:var(--g2)">Что это</div>' + tp.w + '</div></div>'
+      h += '<div class="tip-row"><i class="ti ti-alert-triangle" style="font-size:15px;color:#f59e0b;flex-shrink:0;margin-top:1px"></i><div><div class="tip-lbl" style="color:#92400e">Уточни у клиента</div>' + tp.cl + '</div></div>'
+      h += '</div><div class="say-box"><i class="ti ti-message-2" style="font-size:16px;color:#3b82f6;flex-shrink:0;margin-top:1px"></i><div><div class="tip-lbl" style="color:#1d4ed8;margin-bottom:3px">Ответить клиенту</div><span style="font-size:13px">' + tp.say + '</span></div></div>'
+    }
+    h += '</div>'
+  })
+  document.getElementById('rb').innerHTML = h
+  gs('sc-res')
+}
+
+function addH(v, i, cands) {
+  H.unshift({ v, brand: i?.brand||'?', year: i?.year||'', code: cands.map(c=>c.code).join(' / ') })
+  if (H.length > 5) H.pop()
+  let html = ''
+  H.forEach((h, idx) => {
+    html += '<div class="hi" style="animation-delay:' + (idx*0.05) + 's">'
+    html += '<div style="width:34px;height:34px;background:var(--gm);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-car" style="font-size:16px;color:var(--g2)"></i></div>'
+    html += '<div style="flex:1;min-width:0"><p style="font-size:12px;font-weight:500;font-family:monospace;letter-spacing:.5px">' + h.v + '</p><p style="font-size:11px;color:var(--tx3)">' + h.brand + (h.year ? ' · ' + h.year : '') + '</p></div>'
+    html += '<span class="bok" style="font-size:12px;font-weight:700">' + h.code + '</span></div>'
+  })
+  document.getElementById('hl').innerHTML = html || '<p style="font-size:13px;color:var(--tx3)">Ещё не было запросов</p>'
+}
+
+function renderCat() {
+  const groups = [
+    {g:'VAG', i:['СК','3Т','БК','КР','В8','G4','В5','Sh+']},
+    {g:'BMW', i:['Е46+','Е46-','E90','E90 ЭУР','E60','F20/F30','F10','F20/F21','X3 E83+D','X3 E83-D']},
+    {g:'Mercedes', i:['W168','W169','W246','W203','W203-D','W204','W204+D','W205','W210','W210+D','W211+D','W212','W212 4x4','W163','W164']},
+    {g:'Volvo', i:['XC70','V70']},
+    {g:'Ford', i:['FF','FF1','FFCM','FF3','FM3','FM4']},
+    {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207','407','407-D','406','607','508']},
+    {g:'Renault', i:['SC','SC2/Meg2','RL1','RL2','RL3','LG1','LG2','Trafic','Master 3']},
+    {g:'Opel', i:['OA/OZ пл.','OA/OZ шт.','OVC','OVB','OAJ']},
+    {g:'Audi', i:['В5','B6/B7','B6/B7-D','А6С6','A4B8','Q7']},
+    {g:'Mazda / Mitsubishi', i:['M35','M6 гидро','CX7','Colt']}
+  ]
+  let h = '<p style="font-size:17px;font-weight:700;margin-bottom:16px">Каталог цен</p>'
+  groups.forEach(g => {
+    h += '<p class="lbl" style="margin-top:16px">' + g.g + '</p>'
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-bottom:4px">'
+    g.i.forEach(code => {
+      const pr = PR[code], s = getStock(code)
+      h += '<div class="cc">'
+      h += '<p style="font-size:12px;font-weight:600;margin-bottom:3px">' + code + '</p>'
+      if (pr) {
+        h += '<p style="font-size:11px;color:var(--tx2)">' + fmt(pr.d) + ' ₽</p>'
+        h += '<p style="font-size:11px;color:var(--g2);font-weight:600">' + fmt(pr.r) + ' ₽ розн.</p>'
+      } else {
+        h += '<p style="font-size:10px;color:var(--tx3)">Под запрос</p>'
+      }
+      if (s !== null) {
+        const color = s > 0 ? 'var(--g2)' : '#dc2626'
+        const txt = s > 0 ? s + ' шт.' : 'нет'
+        h += '<p style="font-size:10px;margin-top:2px;color:' + color + '">' + txt + '</p>'
+      }
+      if (pr && pr.note) h += '<p style="font-size:10px;color:#92400e;margin-top:2px">' + pr.note + '</p>'
+      h += '</div>'
+    })
+    h += '</div>'
+  })
+  document.getElementById('cb').innerHTML = h
+}
+
+// Claude Chat
+let chatLoading = false, chatHistory = []
+function fillChat(t) {
+  document.getElementById('chat-inp').value = t
+  document.getElementById('chat-hints').style.display = 'none'
+}
+async function sendChat() {
+  const inp = document.getElementById('chat-inp'), q = inp.value.trim()
+  if (!q || chatLoading) return
+  inp.value = ''
+  document.getElementById('chat-hints').style.display = 'none'
+  chatLoading = true
+  document.getElementById('chat-btn').disabled = true
+  const msgs = document.getElementById('chat-msgs')
+  const userDiv = document.createElement('div')
+  userDiv.className = 'msg-user'
+  userDiv.textContent = q
+  msgs.appendChild(userDiv)
+  const loadDiv = document.createElement('div')
+  loadDiv.className = 'msg-ai'
+  loadDiv.id = 'ai-loading'
+  loadDiv.innerHTML = '<span class="spinner"></span>'
+  msgs.appendChild(loadDiv)
+  msgs.lastElementChild.scrollIntoView({ behavior:'smooth' })
+  const inv = RACKS.filter(r => r.inStock > 0).map(r => r.code + ': ' + r.inStock + ' шт').join(', ')
+  try {
+    const res = await fetch('/api/ask', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ question:q, inventory:inv, history:chatHistory })
+    })
+    const data = await res.json()
+    const answer = data.answer
+    const aiDiv = document.createElement('div')
+    aiDiv.className = 'msg-ai'
+    aiDiv.textContent = answer
+    loadDiv.replaceWith(aiDiv)
+    chatHistory.push({ role:'user', content:q }, { role:'assistant', content:answer })
+  } catch(e) {
+    const errDiv = document.createElement('div')
+    errDiv.className = 'msg-ai'
+    errDiv.style.color = '#dc2626'
+    errDiv.textContent = '⚠️ Ошибка соединения. Попробуй ещё раз.'
+    loadDiv.replaceWith(errDiv)
+  }
+  chatLoading = false
+  document.getElementById('chat-btn').disabled = false
+  msgs.lastElementChild.scrollIntoView({ behavior:'smooth' })
+}
+</script>
+</body>
+</html>
