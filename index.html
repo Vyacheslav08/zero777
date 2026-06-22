@@ -283,7 +283,12 @@ async function loadSheets() {
   try {
     const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv'
     const r = await fetch(url), t = await r.text()
-    const rows = t.split('\n').map(l => l.split(',').map(c => c.replace(/^"|"$/g,'').trim()))
+    const rows = t.split('\n').map(l => {
+  const res = [], re = /(".*?"|[^,]+)(?=,|$)/g
+  let m
+  while ((m = re.exec(l)) !== null) res.push(m[1].replace(/^"|"$/g,'').trim())
+  return res
+})
     RACKS = []
     for (const row of rows) {
       const name = (row[0]||'').trim()
