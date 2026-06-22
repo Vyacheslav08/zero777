@@ -283,12 +283,29 @@ async function loadSheets() {
   try {
     const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv'
     const r = await fetch(url), t = await r.text()
-    const rows = t.split('\n').map(l => {
-  const res = [], re = /(".*?"|[^,]+)(?=,|$)/g
-  let m
-  while ((m = re.exec(l)) !== null) res.push(m[1].replace(/^"|"$/g,'').trim())
-  return res
-})
+    
+    function parseCSV(text) {
+      return text.split('\n').map(line => {
+        const result = []
+        let cell = '', inQ = false
+        for (let i = 0; i < line.length; i++) {
+          const c = line[i]
+          if (inQ) {
+            if (c === '"' && line[i+1] === '"') { cell += '"'; i++ }
+            else if (c === '"') inQ = false
+            else cell += c
+          } else {
+            if (c === '"') inQ = true
+            else if (c === ',') { result.push(cell.trim()); cell = '' }
+            else cell += c
+          }
+        }
+        result.push(cell.trim())
+        return result
+      })
+    }
+
+    const rows = parseCSV(t)
     RACKS = []
     for (const row of rows) {
       const name = (row[0]||'').trim()
@@ -298,7 +315,7 @@ async function loadSheets() {
       const code = m[1].trim()
       const inStock = parseInt(row[1]) || 0
       const d = parseInt((row[3]||'').replace(/\D/g,'')) || 0
-      const r2 = parseInt((row[4]||'').replace(/\D/g,'').split('-')[0]) || 0
+      const r2 = parseInt(((row[4]||'').split('-')[0]).replace(/\D/g,'')) || 0
       if (d > 0 && PR[code]) { PR[code].d = d; if (r2 > 0) PR[code].r = r2 }
       if (inStock >= 0) RACKS.push({ code, inStock })
     }
@@ -306,6 +323,7 @@ async function loadSheets() {
     const el = document.getElementById('total-cnt')
     if (el) el.textContent = total + ' позиций'
   } catch(e) { console.warn('Sheets error', e) }
+}
 }
 
 function getStock(code) {
