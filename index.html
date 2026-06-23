@@ -324,7 +324,6 @@ async function loadSheets() {
     if (el) el.textContent = total + ' позиций'
   } catch(e) { console.warn('Sheets error', e) }
 }
-}
 
 function getStock(code) {
   const r = RACKS.find(r => r.code.toUpperCase() === code.toUpperCase())
