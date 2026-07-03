@@ -264,7 +264,8 @@ const WMI = {
   WVW:'VW',WV2:'VW',WV1:'VW',WVG:'VW',TMB:'Skoda',XW8:'Skoda',
   VSS:'Seat',VS6:'Seat',YV1:'Volvo',YV4:'Volvo',
   VF1:'Renault',VF8:'Renault',VF6:'Citroën',VF7:'Citroën',VF3:'Peugeot',
-  WF0:'Ford',WF2:'Ford',X9F:'Ford',W0L:'Opel',W0V:'Opel',XUF:'Opel',
+  WF0:'Ford',WF2:'Ford',X9F:'Ford',W0L:'Opel',W0V:'Opel',XUF:'Opel',XWF:'Opel',
+  X7L:'Renault',VNA:'Renault',Z8T:'Peugeot',WP1:'Porsche',
   JMZ:'Mazda',JM1:'Mazda',XMC:'Mitsubishi',JA3:'Mitsubishi'
 }
 const YR = {
@@ -283,29 +284,7 @@ async function loadSheets() {
   try {
     const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv'
     const r = await fetch(url), t = await r.text()
-    
-    function parseCSV(text) {
-      return text.split('\n').map(line => {
-        const result = []
-        let cell = '', inQ = false
-        for (let i = 0; i < line.length; i++) {
-          const c = line[i]
-          if (inQ) {
-            if (c === '"' && line[i+1] === '"') { cell += '"'; i++ }
-            else if (c === '"') inQ = false
-            else cell += c
-          } else {
-            if (c === '"') inQ = true
-            else if (c === ',') { result.push(cell.trim()); cell = '' }
-            else cell += c
-          }
-        }
-        result.push(cell.trim())
-        return result
-      })
-    }
-
-    const rows = parseCSV(t)
+    const rows = t.split('\n').map(l => l.split(',').map(c => c.replace(/^"|"$/g,'').trim()))
     RACKS = []
     for (const row of rows) {
       const name = (row[0]||'').trim()
@@ -315,7 +294,7 @@ async function loadSheets() {
       const code = m[1].trim()
       const inStock = parseInt(row[1]) || 0
       const d = parseInt((row[3]||'').replace(/\D/g,'')) || 0
-      const r2 = parseInt(((row[4]||'').split('-')[0]).replace(/\D/g,'')) || 0
+      const r2 = parseInt((row[4]||'').replace(/\D/g,'').split('-')[0]) || 0
       if (d > 0 && PR[code]) { PR[code].d = d; if (r2 > 0) PR[code].r = r2 }
       if (inStock >= 0) RACKS.push({ code, inStock })
     }
@@ -477,6 +456,10 @@ function getRC(info, ans) {
     else { const m = {f1:'FF1',f2g:'FFCM',f3e:'FF3',fie:'FF',m3:'FM3',m4:'FM4'}; c = [{code:m[ans.fo]}] }
 
   } else if (br === 'Peugeot') {
+    if (!ans.pm && info.vin && info.vin.substring(0,3) === 'VF3') {
+      const pgm = {'3':'p3','4':'p3','6':'p407','8':'p508','9':'p607','W':'p207'}[info.vin[3]]
+      if (pgm) ans.pm = pgm
+    }
     if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/Partner/C4',null),opt('p207','207 / C3 Picasso ЭУР','207'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508')])]
     else if (ans.pm === 'p3') {
       if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+'),opt('d','Не знаю',null)])]
@@ -504,6 +487,12 @@ function getRC(info, ans) {
     else { const m = {sc:'SC',sc2:'SC2/Meg2',rl1:'RL1',rl2:'RL2',rl3:'RL3',lg1:'LG1',lg2:'LG2',tr:'Trafic',ms:'Master 3'}; c = [{code:m[ans.rm]}] }
 
   } else if (br === 'Opel') {
+    if (!ans.om && info.vin) {
+      const v = info.vin.toUpperCase(), c4 = v[3], c45 = v.substring(3,5)
+      if (c4 === 'P' || c4 === 'G') ans.om = 'aj'
+      else if (c45 === '0A' || c45 === '0T') ans.om = 'ag'
+      else if (c45 === '0Z') ans.om = 'vc'
+    }
     if (!ans.om) q = [ask('om','Модель:',[opt('ag','Astra G/H / Zafira A/B',null),opt('vc','Vectra C','OVC'),opt('vb','Vectra B','OVB'),opt('aj','Astra J / Insignia (нужна адаптация!)','OAJ')])]
     else if (ans.om === 'ag') {
       if (!ans.op) q = [ask('op','Цвет бачка ГУР:',[opt('z','Белый → ZF → планка','OA/OZ пл.'),opt('t','Зелёный → TRW → штуцера','OA/OZ шт.')])]
