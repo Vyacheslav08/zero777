@@ -165,11 +165,11 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
   <div class="wrap">
     <div style="margin-bottom:14px">
       <p style="font-size:17px;font-weight:700;color:var(--tx)">✦ Спросить ИИ</p>
-      <p style="font-size:13px;color:var(--tx2);margin-top:3px">Знает все рейки и видит актуальный остаток со склада</p>
+      <p style="font-size:13px;color:var(--tx2);margin-top:3px">Знает все рейки и помогает подобрать нужную</p>
     </div>
     <div class="card chat-box">
       <div class="chat-msgs" id="chat-msgs">
-        <div class="msg-ai">Привет! Спроси меня про любую рейку — марку, модель, год. Подберу и скажу что ответить клиенту. Также вижу актуальный остаток из Google Sheets.</div>
+        <div class="msg-ai">Привет! Спроси меня про любую рейку — марку, модель, год или VIN. Подберу и скажу что ответить клиенту.</div>
       </div>
       <div id="chat-hints" class="chat-hints">
         <button class="hint" onclick="fillChat('BMW E46 2003 задний привод')">BMW E46 2003</button>
@@ -402,7 +402,10 @@ function getRC(info, ans) {
     }
 
   } else if (br === 'BMW' || br === 'BMW M') {
-    if (!ans.bm) q = [ask('bm','Серия BMW:',[opt('e46','E46 / E36 (задний привод)',null),opt('e90','E90/91 / E87 / X1 E84 / X3 E83',null),opt('e60','E60/E61 — 5 серия','E60'),opt('fs','F-серия (F30/F20/F10)',null)])]
+    if (!ans.bm && info.vin && info.vin.substring(3,6).toUpperCase() === 'LL3') {
+      c = [{code:'E90 ЭУР', label:'BMW Z4 E89 → E90 ЭУР (по внутренней маркировке)'}]
+    }
+    if (!ans.bm && !c.length) q = [ask('bm','Серия BMW:',[opt('e46','E46 / E36 (задний привод)',null),opt('e90','E90/91 / E87 / X1 E84 / X3 E83',null),opt('e60','E60/E61 — 5 серия','E60'),opt('fs','F-серия (F30/F20/F10)',null)])]
     else if (ans.bm === 'e46') {
       if (!ans.e4l) q = [ask('e4l','Цвет шильдика на рейке:',[opt('gr','Серый/синий/чёрный — ZF (3.5 об., дешевле)','Е46+'),opt('ye','Жёлтый/фиолетовый — TRW (3 об., дороже)','Е46-'),opt('dk','Не знаю — оба',null)])]
       else if (ans.e4l === 'gr') c = [{code:'Е46+'}]
@@ -457,7 +460,10 @@ function getRC(info, ans) {
 
   } else if (br === 'Peugeot') {
     if (!ans.pm && info.vin && info.vin.substring(0,3) === 'VF3') {
-      const pgm = {'3':'p3','4':'p3','6':'p407','8':'p508','9':'p607','W':'p207'}[info.vin[3]]
+      const c4 = info.vin[3].toUpperCase(), c5 = (info.vin[4]||'').toUpperCase()
+      let pgm = {'3':'p3','4':'p3','7':'p3','9':'p607','W':'p207'}[c4] || null
+      if (c4 === '6') pgm = 'CDE'.includes(c5) ? 'p407' : null
+      if (c4 === '8') pgm = (info.year && info.year <= 2005) ? 'p406' : 'p508'
       if (pgm) ans.pm = pgm
     }
     if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/Partner/C4',null),opt('p207','207 / C3 Picasso ЭУР','207'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508')])]
@@ -665,12 +671,11 @@ async function sendChat() {
   loadDiv.innerHTML = '<span class="spinner"></span>'
   msgs.appendChild(loadDiv)
   msgs.lastElementChild.scrollIntoView({ behavior:'smooth' })
-  const inv = RACKS.filter(r => r.inStock > 0).map(r => r.code + ': ' + r.inStock + ' шт').join(', ')
   try {
     const res = await fetch('/api/ask', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ question:q, inventory:inv, history:chatHistory })
+      body: JSON.stringify({ question:q, history:chatHistory })
     })
     const data = await res.json()
     const answer = data.answer
