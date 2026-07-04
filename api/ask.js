@@ -191,6 +191,18 @@ F=2015, G=2016, H=2017, J=2018, K=2019
 L=2020, M=2021, N=2022, P=2023, R=2024
 ⚠️ ИСКЛЮЧЕНИЕ: Ford Всеволожск (X9F) — год в позиции 11, не 10!
 
+**Peugeot позиция 4 (модель), только для VF3:**
+VF32 = 206 (нет в каталоге)
+VF33 = 307
+VF34 = 308
+VF36C / VF36D / VF36E = 407 (⚠️ НЕ 406! Спросить датчик: 407 или 407-D)
+VF36J = Partner старый кузов M59 → XSP
+VF37 = Partner B9 → FR3 (VF37L = коммерческий фургон → FR3-TT)
+VF38 + год до 2005 = 406; VF38 + год 2010+ = 508
+VF39 = 607
+VF3W = 207
+Z8T (Peugeot Словакия/Калуга) — модель по этой таблице НЕ определяется, спросить модель.
+
 **VAG позиции 7-8 (код модели):**
 1J = Golf 4 / Bora / Octavia A4
 1K = Golf 5 / Golf 6 / Octavia A5 / Touran 1 / Jetta 5
@@ -343,17 +355,20 @@ Volvo V50 → FFCM
 
 ## КАК ОТВЕЧАТЬ
 
-Ты отвечаешь КОРОТКО и КОНКРЕТНО. Формат ответа:
+Ты отвечаешь КОРОТКО и КОНКРЕТНО. НИКОГДА не называй цену (дроп/розницу) и НИКОГДА не называй наличие/остаток на складе — этого нет в задаче, селлер узнаёт это отдельно.
 
-**Рейка: [КОД]**
-Дроп: X.XXX ₽ | Розница: X.XXX ₽
-[Наличие: X шт — если передан остаток]
-⚠️ [Важное уточнение если нужно]
-💬 Скажи клиенту: "[Фраза]"
+НИКОГДА не используй разметку markdown: никаких звёздочек **, решёток #, дефисов-списков. Только обычный текст с переносами строк.
 
-Если нужно уточнить у клиента — спроси конкретный вопрос.
+Формат ответа (без звёздочек, просто текст):
+
+Рейка: [КОД]
+[Одна строка: почему именно эта рейка — модель/год/признак]
+Уточнение: [если нужно важное предупреждение]
+Клиенту сказать: "[Короткая фраза]"
+
+Если нужно уточнить у клиента — спроси ОДИН конкретный вопрос, без кода рейки.
 Если рейки нет в каталоге — скажи прямо: "Этой позиции нет в каталоге."
-Отвечай на русском. Без лишних слов.`
+Отвечай на русском. Без лишних слов, без цен, без наличия, без markdown-звёздочек.`
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -363,19 +378,15 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { question, inventory, history } = req.body
+  const { question, history } = req.body
 
   if (!question) return res.status(400).json({ error: 'question is required' })
-
-  const inventoryContext = inventory
-    ? `\n\nАКТУАЛЬНЫЙ ОСТАТОК НА СКЛАДЕ (из Google Sheets, сейчас):\n${inventory}`
-    : ''
 
   try {
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 600,
-      system: SYSTEM_PROMPT + inventoryContext,
+      system: SYSTEM_PROMPT,
       messages: history && history.length > 0
         ? [...history, { role: 'user', content: question }]
         : [{ role: 'user', content: question }],
