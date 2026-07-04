@@ -203,6 +203,15 @@ VF39 = 607
 VF3W = 207
 Z8T (Peugeot Словакия/Калуга) — модель по этой таблице НЕ определяется, спросить модель.
 
+**Opel позиции 4-6 (код модели), для WMI XUF/XWF/W0L/W0V:**
+PE6 / PE = Astra J / Insignia (2009+, ЭУР) → рейка OAJ
+0AH / OA = Astra H (2004-2014, ГУР) → OA/OZ (спросить марку насоса ZF/TRW)
+0AG = Astra G (1998-2009, ГУР) → OA/OZ
+0Z = Zafira A/B (ГУР) → OA/OZ
+0ZC / VC = Vectra C (2002-2008) → OVC
+0VB = Vectra B (1995-2002) → OVB
+Если код не входит в список — спроси модель у клиента, не гадай.
+
 **VAG позиции 7-8 (код модели):**
 1J = Golf 4 / Bora / Octavia A4
 1K = Golf 5 / Golf 6 / Octavia A5 / Touran 1 / Jetta 5
