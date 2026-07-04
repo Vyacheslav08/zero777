@@ -128,13 +128,22 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
     <div class="wrap fa">
       <div class="srow">
         <div class="scard"><p style="font-size:11px;color:var(--tx3);margin-bottom:4px">Запросов сегодня</p><p style="font-size:24px;font-weight:700;color:var(--tx)" id="cnt">0</p></div>
-        <div class="scard"><p style="font-size:11px;color:var(--tx3);margin-bottom:4px">Позиций на складе</p><p style="font-size:24px;font-weight:700;color:var(--g)" id="total-cnt">...</p></div>
       </div>
       <p class="lbl">Подбор по VIN</p>
       <div class="card">
         <div style="display:flex;gap:10px">
           <input type="text" class="vin-inp" id="vi" maxlength="17" placeholder="Введите VIN (17 символов)" oninput="ov(this)" onkeydown="if(event.key==='Enter')go()">
           <button class="btn" id="gb" onclick="go()" disabled><i class="ti ti-search"></i>Найти</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <select class="vin-inp" id="mb" style="letter-spacing:0;text-transform:none;flex:2" onchange="upd()">
+            <option value="">Марка (по VIN автоматически)</option>
+            <option>VW</option><option>Skoda</option><option>Seat</option><option>Audi</option>
+            <option>BMW</option><option>Mercedes</option><option>Volvo</option><option>Ford</option>
+            <option>Peugeot</option><option>Citroën</option><option>Renault</option><option>Opel</option>
+            <option>Mazda</option><option>Mitsubishi</option><option>Porsche</option>
+          </select>
+          <input type="number" class="vin-inp" id="my" style="letter-spacing:0;flex:1" min="1985" max="2026" placeholder="Год (из СТС)" oninput="upd()" onkeydown="if(event.key==='Enter')go()">
         </div>
         <div id="vh" style="margin-top:10px;min-height:20px"></div>
       </div>
@@ -343,13 +352,25 @@ function fmt(n) { return n ? n.toLocaleString('ru-RU') : '—' }
 let ST = { vin:null, info:null, answers:{} }, QD = 0
 
 function ov(el) {
-  const v = el.value.toUpperCase().replace(/[^A-Z0-9]/g,''); el.value = v
+  el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g,'')
+  upd()
+}
+
+function upd() {
+  const v = document.getElementById('vi').value
+  const mb = document.getElementById('mb').value
+  const myr = parseInt(document.getElementById('my').value) || null
   const btn = document.getElementById('gb'), h = document.getElementById('vh')
   if (v.length === 17) {
-    const i = dv(v); btn.disabled = false
-    h.innerHTML = i.brand
-      ? '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + i.brand + (i.year ? ' · ' + i.year + ' г.' : '') + '</span>'
-      : '<span class="binf"><i class="ti ti-help" style="font-size:12px"></i>Марка не распознана — выберем вручную</span>'
+    const i = dv(v)
+    const brand = mb || i.brand, year = myr || i.year
+    btn.disabled = false
+    h.innerHTML = brand
+      ? '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + brand + (year ? ' · ' + year + ' г.' : '') + (mb || myr ? ' (уточнено вручную)' : '') + '</span>'
+      : '<span class="binf"><i class="ti ti-help" style="font-size:12px"></i>Марка не распознана — укажи марку в списке ниже</span>'
+  } else if (mb) {
+    btn.disabled = false
+    h.innerHTML = '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + mb + (myr ? ' · ' + myr + ' г.' : '') + ' — подбор без VIN</span>'
   } else {
     btn.disabled = true
     h.innerHTML = v.length > 0 ? '<span style="font-size:12px;color:var(--tx3)">' + v.length + '/17</span>' : ''
@@ -358,10 +379,19 @@ function ov(el) {
 
 function go() {
   const v = document.getElementById('vi').value.toUpperCase().replace(/[^A-Z0-9]/g,'')
-  if (v.length !== 17) return
-  ST = { vin:v, info:dv(v), answers:{} }; N++
+  const mb = document.getElementById('mb').value
+  const myr = parseInt(document.getElementById('my').value) || null
+  let info
+  if (v.length === 17) info = dv(v)
+  else if (mb) info = { vin:'', brand:null, year:null, known:false }
+  else return
+  if (mb) { info.brand = mb; info.known = true }
+  if (myr && myr >= 1985 && myr <= 2026) info.year = myr
+  ST = { vin: v.length === 17 ? v : mb + (info.year ? ' · ' + info.year : ''), info, answers:{} }; N++
   document.getElementById('cnt').textContent = N
   document.getElementById('vi').value = ''
+  document.getElementById('mb').value = ''
+  document.getElementById('my').value = ''
   document.getElementById('vh').innerHTML = ''
   document.getElementById('gb').disabled = true
   QD = 0; rq()
@@ -576,12 +606,6 @@ function showRes(cands) {
       else h += '<span class="berr"><i class="ti ti-x" style="font-size:12px"></i>Нет в наличии</span>'
     } else h += '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>В наличии</span>'
     h += '</div>'
-    if (pr && !no) {
-      h += '<div class="pgrid"><div class="pc"><p style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Дроп цена</p>'
-      h += '<p style="font-size:22px;font-weight:700">' + fmt(pr.d) + ' ₽</p></div>'
-      h += '<div class="pc"><p style="font-size:10px;color:var(--tx3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Розница</p>'
-      h += '<p style="font-size:22px;font-weight:700;color:var(--g2)">' + fmt(pr.r) + ' ₽</p></div></div>'
-    }
     if (tp) {
       h += '<div class="tips-wrap">'
       h += '<div class="tip-row"><i class="ti ti-info-circle" style="font-size:15px;color:var(--g);flex-shrink:0;margin-top:1px"></i><div><div class="tip-lbl" style="color:var(--g2)">Что это</div>' + tp.w + '</div></div>'
