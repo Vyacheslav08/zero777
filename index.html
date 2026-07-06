@@ -136,14 +136,21 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
           <button class="btn" id="gb" onclick="go()" disabled><i class="ti ti-search"></i>Найти</button>
         </div>
         <div style="display:flex;gap:10px;margin-top:10px">
-          <select class="vin-inp" id="mb" style="letter-spacing:0;text-transform:none;flex:2" onchange="upd()">
+          <select class="vin-inp" id="mb" style="letter-spacing:0;text-transform:none;flex:2" onchange="fillModels();upd()">
             <option value="">Марка (по VIN автоматически)</option>
             <option>VW</option><option>Skoda</option><option>Seat</option><option>Audi</option>
             <option>BMW</option><option>Mercedes</option><option>Volvo</option><option>Ford</option>
             <option>Peugeot</option><option>Citroën</option><option>Renault</option><option>Opel</option>
-            <option>Mazda</option><option>Mitsubishi</option><option>Porsche</option><option>Chrysler</option>
+            <option>Porsche</option><option>Mazda</option><option>Mitsubishi</option><option>Smart</option>
+            <option value="Chrysler">Chrysler / Dodge</option><option>Fiat</option><option value="Alfa Romeo">Alfa Romeo</option>
+            <option>Nissan</option><option>Honda</option><option>Suzuki</option><option>Toyota</option>
           </select>
           <input type="number" class="vin-inp" id="my" style="letter-spacing:0;flex:1" min="1985" max="2026" placeholder="Год (из СТС)" oninput="upd()" onkeydown="if(event.key==='Enter')go()">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <select class="vin-inp" id="md" style="letter-spacing:0;text-transform:none;flex:1" onchange="upd()" disabled>
+            <option value="">Модель (сначала выбери марку)</option>
+          </select>
         </div>
         <div id="vh" style="margin-top:10px;min-height:20px"></div>
       </div>
@@ -228,7 +235,13 @@ const PR = {
   'А6С6':{d:24000,r:29000},'Q7':{d:35000,r:41000},'A4B8':{d:30000,r:36000},
   'M35':{d:13600,r:17500},'M6 гидро':{d:12900,r:16500},'CX7':{d:25000,r:30000},
   'Colt':{d:39200,r:45000},
-  'V4':{d:19800,r:24000},'V5':{d:21200,r:25000},'PT':{d:17500,r:21000}
+  'V4':{d:19800,r:24000},'V5':{d:21200,r:25000},'PT':{d:17500,r:21000},
+  'G3':{d:12500,r:15000},'T4':{d:20200,r:24500},'T5':{d:19200,r:23000},
+  'Boxer':{d:38000,r:42000},'Expert':{d:23200,r:27000},
+  'DOBLO':{d:25200,r:29000},'AR147':{d:11900,r:15000},
+  'N16':{d:13600,r:17000},'P12':{d:14900,r:18000},
+  'CRV':{d:37800,r:43000},'5D':{d:35200,r:39000},
+  'Swift':{d:19200,r:23000},'AYGO':{d:11000,r:14500}
 }
 
 const TP = {
@@ -280,6 +293,8 @@ const WMI = {
   WF0:'Ford',WF2:'Ford',X9F:'Ford',W0L:'Opel',W0V:'Opel',XUF:'Opel',XWF:'Opel',
   X7L:'Renault',VNA:'Renault',Z8T:'Peugeot',WP1:'Porsche',
   JMZ:'Mazda',JM1:'Mazda',XMC:'Mitsubishi',JA3:'Mitsubishi',
+  ZFA:'Fiat',ZAR:'Alfa Romeo',JN1:'Nissan',SJN:'Nissan',JHM:'Honda',SHH:'Honda',JHL:'Honda',
+  JSA:'Suzuki',TSM:'Suzuki',JTD:'Toyota',WME:'Smart',
   '1A4':'Chrysler','1A8':'Chrysler','2A4':'Chrysler','2A8':'Chrysler','1C4':'Chrysler','2C4':'Chrysler','3A4':'Chrysler','3A8':'Chrysler',
   '1D4':'Chrysler','2D4':'Chrysler','1D8':'Chrysler','1B4':'Chrysler','2B4':'Chrysler'
 }
@@ -357,6 +372,178 @@ function fmt(n) { return n ? n.toLocaleString('ru-RU') : '—' }
 // VIN logic
 let ST = { vin:null, info:null, answers:{} }, QD = 0
 
+// Модели по маркам: code = сразу код рейки, pre = предзаполненные ответы дерева
+const MODELS = {
+  'VW': [
+    {l:'Golf 3 / Passat B3-B4 (до 1997)', code:'G3'},
+    {l:'Golf 4 / Bora (1997-2005)', code:'G4'},
+    {l:'Golf 5 / 6 (2004-2012)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Golf 7 / 8 (2013+)', pre:{vm:'ok7', vm13:'ok7'}},
+    {l:'Jetta (5/6)', pre:{pw2:'e', vm09:'go', vm13:'ok7', vm:'ok7'}},
+    {l:'Passat B5 (1996-2005)', code:'В5'},
+    {l:'Passat B6 / B7 / CC', pre:{pw2:'e', vm09:'pt', vm13:'pb67'}},
+    {l:'Passat B8 (2015+)', pre:{vm:'pb8'}},
+    {l:'Tiguan 1 (2011-2015)', pre:{vm09:'pt', vm13:'pb67'}},
+    {l:'Tiguan 2 (2016+)', pre:{vm:'ok7'}},
+    {l:'Touran', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Caddy (ЭУР)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Sharan 1 / Alhambra (до 2010)', pre:{pw2:'g', vgm:'sh'}},
+    {l:'Sharan 2 (2010+)', pre:{vm09:'pt', vm13:'pb67'}},
+    {l:'Touareg 1 (до 2010)', code:'Q7'},
+    {l:'Amarok', code:'Q7'},
+    {l:'T4', code:'T4'},
+    {l:'T5 / T6 / Multivan', code:'T5'}
+  ],
+  'Skoda': [
+    {l:'Octavia Tour / A4', code:'G4'},
+    {l:'Octavia A5 (2004-2012)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Octavia A7 / A8 (2013+)', pre:{vm:'ok7', vm13:'ok7'}},
+    {l:'Superb 1', code:'В5'},
+    {l:'Superb 3 (2015+)', pre:{vm:'ok7', vm13:'ok7'}},
+    {l:'Yeti', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Kodiaq', pre:{vm:'ok7'}}
+  ],
+  'Seat': [
+    {l:'Leon 2 (2005-2012)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Leon 3 (2013+)', pre:{vm:'ok7', vm13:'ok7'}},
+    {l:'Alhambra 1', pre:{pw2:'g', vgm:'sh'}},
+    {l:'Toledo 2 (до 2005)', code:'G4'}
+  ],
+  'Audi': [
+    {l:'A4 B5 / A6 C5 (до 2005)', pre:{am:'b5'}},
+    {l:'A4 B6 / B7 (2000-2008)', pre:{am:'b67'}},
+    {l:'A4 B8 / A5 / Q5', pre:{am:'b8'}},
+    {l:'A6 C6 (2004-2011)', pre:{am:'c6'}},
+    {l:'Q7 (= Touareg 1 / Cayenne 1)', pre:{am:'q7'}},
+    {l:'A3 / TT / Q3', pre:{am:'a3'}}
+  ],
+  'BMW': [
+    {l:'E36 / E46 (3 серия)', pre:{bm:'e46'}},
+    {l:'3 E90/91/92/93 / 1 E87', pre:{bm:'e90'}},
+    {l:'X1 E84', pre:{bm:'e90', e9t:'x1'}},
+    {l:'X3 E83', pre:{bm:'e90', e9t:'x3'}},
+    {l:'Z4 E89', code:'E90 ЭУР'},
+    {l:'5 E60 / E61', pre:{bm:'e60'}},
+    {l:'3 F30', pre:{bm:'fs', fm:'f30'}},
+    {l:'1 F20 / F21', pre:{bm:'fs', fm:'f21'}},
+    {l:'5 F10', pre:{bm:'fs', fm:'f10'}}
+  ],
+  'Mercedes': [
+    {l:'A W168', pre:{mm:'w168'}},
+    {l:'A W169 / B W245', pre:{mm:'w169'}},
+    {l:'B W246', pre:{mm:'w246'}},
+    {l:'C W203 / CLK W209 / CLC', pre:{mm:'w203'}},
+    {l:'C W204', pre:{mm:'w204'}},
+    {l:'C W205', pre:{mm:'w205'}},
+    {l:'E W210', pre:{mm:'w210'}},
+    {l:'E W211 / CLS W219', pre:{mm:'w211'}},
+    {l:'E W212', pre:{mm:'w212'}},
+    {l:'ML W163', pre:{mm:'w163'}},
+    {l:'ML W164 / R W251 / GL X164', pre:{mm:'w164'}}
+  ],
+  'Volvo': [
+    {l:'XC70 / XC60 / S60 / S80 / V60 (2007+)', pre:{vt:'xc'}},
+    {l:'V70 / XC90 (до 2007, с кронштейном)', pre:{vt:'v7', vom:'s60'}},
+    {l:'S40 II / V50 (= Focus 2)', code:'FFCM'}
+  ],
+  'Ford': [
+    {l:'Focus 1 (1998-2005)', pre:{fo:'f1'}},
+    {l:'Focus 2 / C-Max гидро (2004-2011)', pre:{fo:'f2g'}},
+    {l:'Focus 3 ЭУР / Kuga 2 (2011+)', pre:{fo:'f3e'}},
+    {l:'Fiesta / Fusion', pre:{fo:'fie'}},
+    {l:'Mondeo 3 (2000-2007)', pre:{fo:'m3'}},
+    {l:'Mondeo 4 / S-Max / Galaxy 2', pre:{fo:'m4'}},
+    {l:'Transit / Tourneo Connect (до 2012)', code:'FF1'},
+    {l:'Galaxy 1 (= Sharan 1)', code:'Sh+'}
+  ],
+  'Peugeot': [
+    {l:'307 / 308 / 408 / Partner B9 / C4', pre:{pm:'p3'}},
+    {l:'207 / C3 Picasso', pre:{pm:'p207'}},
+    {l:'Partner M59 / Xsara Picasso', pre:{pm:'pm59'}},
+    {l:'406', pre:{pm:'p406'}},
+    {l:'407', pre:{pm:'p407'}},
+    {l:'607', pre:{pm:'p607'}},
+    {l:'508', pre:{pm:'p508'}},
+    {l:'Boxer / Jumper / Ducato', pre:{pm:'bx'}},
+    {l:'Expert / Scudo / Jumpy', pre:{pm:'ex'}},
+    {l:'107 / C1 / Aygo', pre:{pm:'p107'}}
+  ],
+  'Citroën': [
+    {l:'C4 / Berlingo B9 / Partner B9', pre:{cm:'c4'}},
+    {l:'Xsara Picasso / Berlingo M59', pre:{cm:'xsp'}},
+    {l:'C2 / C3 гидравлика', pre:{cm:'c23'}},
+    {l:'DS3 / C3 Picasso ЭУР (2009+)', pre:{cm:'ds3'}},
+    {l:'C5 (до 2008)', pre:{cm:'c5'}},
+    {l:'C5 X7 (2008+)', pre:{cm:'c5x'}},
+    {l:'Jumper / Boxer / Ducato', pre:{cm:'jm'}},
+    {l:'Jumpy / Expert / Scudo', pre:{cm:'jy'}},
+    {l:'C1 / 107 / Aygo', pre:{cm:'c1'}}
+  ],
+  'Renault': [
+    {l:'Scenic 1 / Megane 1 (до 2003)', pre:{rm:'sc'}},
+    {l:'Scenic 2 / Megane 2 (2002-2009)', pre:{rm:'sc2'}},
+    {l:'Laguna 1', pre:{rm:'rl1'}},
+    {l:'Laguna 2', pre:{rm:'rl2'}},
+    {l:'Laguna 3 / Latitude', pre:{rm:'rl3'}},
+    {l:'Logan 1 / Sandero 1 (до 2012)', pre:{rm:'lg1'}},
+    {l:'Logan рестайл 2012+ / Logan 2', pre:{rm:'lg2'}},
+    {l:'Trafic / Vivaro', pre:{rm:'tr'}},
+    {l:'Master 3', pre:{rm:'ms'}}
+  ],
+  'Opel': [
+    {l:'Astra G / H / Zafira A / B', pre:{om:'ag'}},
+    {l:'Astra J / Insignia (ЭУР)', pre:{om:'aj'}},
+    {l:'Vectra C', pre:{om:'vc'}},
+    {l:'Vectra B', pre:{om:'vb'}},
+    {l:'Vivaro (= Trafic)', code:'Trafic'}
+  ],
+  'Porsche': [ {l:'Cayenne 1 (до 2010) = Q7', pre:{pom:'cy'}} ],
+  'Mazda': [
+    {l:'Mazda 3 BK (2002-2009)', pre:{mam:'bk'}},
+    {l:'Mazda 6 GG гидро (2002-2007)', pre:{mam:'m6'}},
+    {l:'CX-7', pre:{mam:'cx'}},
+    {l:'Mazda 2 (= Fiesta/Fusion)', code:'FF'}
+  ],
+  'Mitsubishi': [ {l:'Colt (= Smart)', code:'Colt'} ],
+  'Smart': [ {l:'Smart (= Colt)', code:'Colt'} ],
+  'Chrysler': [
+    {l:'Voyager / Caravan 4 (2001-2008)', pre:{crm:'v4'}},
+    {l:'Voyager / Caravan 5 (2008+)', pre:{crm:'v5'}},
+    {l:'PT Cruiser', pre:{crm:'pt'}}
+  ],
+  'Fiat': [
+    {l:'Doblo', pre:{fim:'db'}},
+    {l:'Ducato (= Boxer)', pre:{fim:'dc'}},
+    {l:'Scudo (= Expert)', pre:{fim:'sc'}}
+  ],
+  'Alfa Romeo': [ {l:'147 / 159 / 166', code:'AR147'} ],
+  'Nissan': [
+    {l:'Almera N16 / Classic', pre:{nm:'n16'}},
+    {l:'Primera P12', pre:{nm:'p12'}},
+    {l:'Almera G15 (= Logan 2)', pre:{nm:'g15'}}
+  ],
+  'Honda': [
+    {l:'CR-V 4 (2012-2017)', pre:{hm:'crv'}},
+    {l:'Civic 8 (2006-2012)', pre:{hm:'cv'}}
+  ],
+  'Suzuki': [ {l:'Swift', code:'Swift'} ],
+  'Toyota': [ {l:'Aygo (= C1 / 107)', pre:{tm:'ay'}} ]
+}
+
+function fillModels() {
+  const mb = document.getElementById('mb').value, md = document.getElementById('md')
+  const list = MODELS[mb] || []
+  if (!mb || !list.length) {
+    md.disabled = true
+    md.innerHTML = '<option value="">Модель (сначала выбери марку)</option>'
+    return
+  }
+  md.disabled = false
+  let h = '<option value="">Модель (необязательно — уточнит подбор)</option>'
+  list.forEach((m,i) => { h += '<option value="' + i + '">' + m.l + '</option>' })
+  md.innerHTML = h
+}
+
 function ov(el) {
   el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g,'')
   upd()
@@ -394,10 +581,16 @@ function go() {
   if (mb) { info.brand = mb; info.known = true }
   if (myr && myr >= 1985 && myr <= 2026) info.year = myr
   ST = { vin: v.length === 17 ? v : mb + (info.year ? ' · ' + info.year : ''), info, answers:{} }; N++
+  const mdEl = document.getElementById('md')
+  if (mb && mdEl.value !== '') {
+    const me = (MODELS[mb] || [])[+mdEl.value]
+    if (me) ST.answers = me.code ? { _force: me.code } : Object.assign({}, me.pre)
+  }
   document.getElementById('cnt').textContent = N
   document.getElementById('vi').value = ''
   document.getElementById('mb').value = ''
   document.getElementById('my').value = ''
+  fillModels()
   document.getElementById('vh').innerHTML = ''
   document.getElementById('gb').disabled = true
   QD = 0; rq()
@@ -405,6 +598,7 @@ function go() {
 
 function getRC(info, ans) {
   if (!info || !info.brand) return { candidates:[], questions:[], unknown:true }
+  if (ans._force) return { candidates:[{code: ans._force}], questions:[] }
   const yr = info.year || 2010, br = info.brand
   let c = [], q = []
   const ask = (id,t,o) => ({ id, text:t, options:o })
@@ -425,7 +619,7 @@ function getRC(info, ans) {
       else if (ans.pw2 === 'e') c = [{code:'СК'}]
       else if (!ans.vgm) q = [ask('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+')])]
       else c = [ans.vgm === 'sh' ? {code:'Sh+'} : {code:'G4'}]
-    } else c = [{code:'G4'}]
+    } else c = [{code: yr <= 1997 ? 'G3' : 'G4'}]
 
   } else if (br === 'Audi') {
     if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 / A6 C5 до 2005',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT / Q3 (ЭУР)',null)])]
@@ -462,6 +656,11 @@ function getRC(info, ans) {
     }
 
   } else if (br === 'Mercedes') {
+    if (!ans.mm && info.vin && info.vin.length === 17) {
+      const mc = info.vin.substring(3,6)
+      const mmap = {'168':'w168','169':'w169','245':'w169','246':'w246','203':'w203','204':'w204','205':'w205','210':'w210','211':'w211','219':'w211','212':'w212','163':'w163','164':'w164','251':'w164'}
+      if (mmap[mc]) ans.mm = mmap[mc]
+    }
     if (!ans.mm) q = [ask('mm','Кузов Mercedes:',[opt('w168','A W168 (1997-2004)','W168'),opt('w169','A W169 / B W245 (2004-2012)','W169'),opt('w246','B W246 (2011+)','W246'),opt('w203','C W203 (2000-2007)',null),opt('w204','C W204 (2007-2014)',null),opt('w205','C W205 (2014+)','W205'),opt('w210','E W210 (1995-2002)',null),opt('w211','E W211 / CLS W219','W211+D'),opt('w212','E W212 (2009-2016)',null),opt('w163','ML W163 (1997-2005)','W163'),opt('w164','ML W164 / R W251','W164')])]
     else if (ans.mm === 'w203') {
       if (!ans.w3s) q = [ask('w3s','Датчик W203:',[opt('y','Есть датчик','W203-D'),opt('n','Без датчика','W203'),opt('4','4Matic — нет в каталоге',null)])]
@@ -483,8 +682,8 @@ function getRC(info, ans) {
 
   } else if (br === 'Volvo') {
     if (yr <= 2007) {
-      if (!ans.vom) q = [ask('vom','Модель:',[opt('s60','S60/V70/XC90 2000-2007','V70'),opt('s40','S40/V40 до 2004','В5')])]
-      else c = [{code: ans.vom === 's40' ? 'В5' : 'V70'}]
+      if (!ans.vom) q = [ask('vom','Модель:',[opt('s60','S60/V70/XC90 2000-2007 — с кронштейном','V70'),opt('s40','S40 II / V50 (2004-2012) = Focus 2','FFCM')])]
+      else c = [{code: ans.vom === 's40' ? 'FFCM' : 'V70'}]
     } else if (yr <= 2016) {
       if (!ans.vt) q = [ask('vt','Модель:',[opt('xc','S60/S80/V60/XC60/XC70 — без кронштейна','XC70'),opt('v7','V70/XC90 — с кронштейном','V70')])]
       else c = [{code: ans.vt === 'v7' ? 'V70' : 'XC70'}]
@@ -502,7 +701,7 @@ function getRC(info, ans) {
       if (c4 === '8') pgm = (info.year && info.year <= 2005) ? 'p406' : 'p508'
       if (pgm) ans.pm = pgm
     }
-    if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/Partner/C4',null),opt('p207','207 / C3 Picasso ЭУР','207'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508')])]
+    if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/408/Partner B9/C4',null),opt('p207','207 / C3 Picasso ЭУР','207'),opt('pm59','Partner M59 / Xsara Picasso','XSP'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508'),opt('bx','Boxer / Jumper / Ducato','Boxer'),opt('ex','Expert / Scudo / Jumpy','Expert'),opt('p107','107 / C1 / Aygo','AYGO')])]
     else if (ans.pm === 'p3') {
       if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+'),opt('d','Не знаю',null)])]
       else { const code = ans.esp==='y'?'FR3-':ans.esp==='n'?'FR3+':null; c = code ? [{code}] : [{code:'FR3-'},{code:'FR3+'}] }
@@ -510,17 +709,17 @@ function getRC(info, ans) {
       if (!ans.p4s) q = [ask('p4s','Датчик 407:',[opt('y','Есть датчик','407-D'),opt('n','Без датчика','407')])]
       else c = [{code: ans.p4s === 'y' ? '407-D' : '407'}]
     } else {
-      const m = {p207:{code:'207'},p406:{code:'406'},p607:{code:'607'},p508:{code:'508'}}
+      const m = {p207:{code:'207'},pm59:{code:'XSP'},p406:{code:'406'},p607:{code:'607'},p508:{code:'508'},bx:{code:'Boxer'},ex:{code:'Expert'},p107:{code:'AYGO'}}
       c = [m[ans.pm]].filter(Boolean)
     }
 
   } else if (br === 'Citroën') {
-    if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009+)','207'),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7')])]
+    if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009+)','207'),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jy','Jumpy / Expert / Scudo','Expert'),opt('c1','C1 / 107 / Aygo','AYGO')])]
     else if (ans.cm === 'c4') {
       if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+')])]
       else c = [{code: ans.esp === 'y' ? 'FR3-' : 'FR3+'}]
     } else {
-      const m = {xsp:'XSP',c23:'C2/C3',ds3:'207',c5:'С5',c5x:'С5 X7'}
+      const m = {xsp:'XSP',c23:'C2/C3',ds3:'207',c5:'С5',c5x:'С5 X7',jm:'Boxer',jy:'Expert',c1:'AYGO'}
       c = [{code: m[ans.cm]}]
     }
 
@@ -550,6 +749,39 @@ function getRC(info, ans) {
   } else if (br === 'Mitsubishi') {
     c = [{code:'Colt'}]
 
+  } else if (br === 'Smart') {
+    c = [{code:'Colt', label:'Smart = Mitsubishi Colt — одна рейка'}]
+
+  } else if (br === 'Porsche') {
+    if (!ans.pom) q = [ask('pom','Модель Porsche:',[opt('cy','Cayenne 1 (до 2010) = Q7/Touareg','Q7'),opt('ot','Другая — нет в каталоге',null)])]
+    else if (ans.pom === 'cy') c = [{code:'Q7', label:'Cayenne 1 = Q7. Датчик уточнить, нужна адаптация'}]
+    else c = [{code:'⚠ нет', label:'Из Porsche только Cayenne 1 (до 2010)'}]
+
+  } else if (br === 'Fiat') {
+    if (!ans.fim) q = [ask('fim','Модель Fiat:',[opt('db','Doblo','DOBLO'),opt('dc','Ducato (= Boxer/Jumper)','Boxer'),opt('sc','Scudo (= Expert/Jumpy)','Expert')])]
+    else { const m = {db:'DOBLO',dc:'Boxer',sc:'Expert'}; c = [{code:m[ans.fim]}] }
+
+  } else if (br === 'Alfa Romeo') {
+    c = [{code:'AR147', label:'Alfa Romeo 147/159/166'}]
+
+  } else if (br === 'Nissan') {
+    if (!ans.nm) q = [ask('nm','Модель Nissan:',[opt('n16','Almera N16 / Almera Classic','N16'),opt('p12','Primera P12 (2001-2008)','P12'),opt('g15','Almera G15 (2012+) = Logan','LG2'),opt('ot','Другая — нет в каталоге',null)])]
+    else if (ans.nm === 'ot') c = [{code:'⚠ нет', label:'Японцев нет в каталоге (кроме N16/P12)'}]
+    else { const m = {n16:'N16',p12:'P12',g15:'LG2'}; c = [{code:m[ans.nm]}] }
+
+  } else if (br === 'Honda') {
+    if (!ans.hm) q = [ask('hm','Модель Honda:',[opt('crv','CR-V 4 (2012-2017)','CRV'),opt('cv','Civic 8 (2006-2012)','5D'),opt('ot','Другая — нет в каталоге',null)])]
+    else if (ans.hm === 'ot') c = [{code:'⚠ нет', label:'Из Honda только CR-V 4 и Civic 8'}]
+    else c = [{code: ans.hm === 'crv' ? 'CRV' : '5D'}]
+
+  } else if (br === 'Suzuki') {
+    c = [{code:'Swift', label:'Из Suzuki только Swift (часто под заказ)'}]
+
+  } else if (br === 'Toyota') {
+    if (!ans.tm) q = [ask('tm','Модель Toyota:',[opt('ay','Aygo (= C1 / 107)','AYGO'),opt('ot','Другая — нет в каталоге',null)])]
+    else if (ans.tm === 'ay') c = [{code:'AYGO'}]
+    else c = [{code:'⚠ нет', label:'Японцев нет в каталоге (из Toyota только Aygo)'}]
+
   } else if (br === 'Chrysler') {
     if (!ans.crm && info.year) {
       if (info.year >= 2009) ans.crm = 'v5'
@@ -568,7 +800,7 @@ function rq() {
   const qc = document.getElementById('qc'), qi = document.getElementById('qi'), pb = document.getElementById('pb')
   qi.innerHTML = '<p class="lbl" style="margin-bottom:4px">' + ST.vin + '</p>'
   if (r.unknown || !ST.info?.brand) {
-    const brands = ['VW','Skoda','Seat','Audi','BMW','Mercedes','Volvo','Ford','Peugeot','Citroën','Renault','Opel','Mazda','Mitsubishi','Chrysler']
+    const brands = ['VW','Skoda','Seat','Audi','BMW','Mercedes','Volvo','Ford','Peugeot','Citroën','Renault','Opel','Porsche','Mazda','Mitsubishi','Smart','Chrysler','Fiat','Alfa Romeo','Nissan','Honda','Suzuki','Toyota']
     let btns = ''
     brands.forEach(b => { btns += '<button class="opt" style="width:auto;padding:7px 13px;font-size:12px;animation:none" onclick="sbr(\'' + b + '\')">' + b + '</button>' })
     qc.innerHTML = '<div class="card" style="text-align:center;padding:24px"><i class="ti ti-help-circle" style="font-size:34px;color:var(--tx3)"></i><p style="font-size:15px;font-weight:600;margin:10px 0 6px">Марка не распознана</p><p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Выберите вручную:</p><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">' + btns + '</div></div>'
@@ -647,17 +879,19 @@ function addH(v, i, cands) {
 
 function renderCat() {
   const groups = [
-    {g:'VAG', i:['СК','3Т','БК','КР','В8','G4','В5','Sh+']},
+    {g:'VAG', i:['СК','3Т','БК','КР','В8','G3','G4','В5','Sh+','T4','T5']},
     {g:'BMW', i:['Е46+','Е46-','E90','E90 ЭУР','E60','F20/F30','F10','F20/F21','X3 E83+D','X3 E83-D']},
     {g:'Mercedes', i:['W168','W169','W246','W203','W203-D','W204','W204+D','W205','W210','W210+D','W211+D','W212','W212 4x4','W163','W164']},
     {g:'Volvo', i:['XC70','V70']},
     {g:'Ford', i:['FF','FF1','FFCM','FF3','FM3','FM4']},
-    {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207','407','407-D','406','607','508']},
+    {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207','407','407-D','406','607','508','Boxer','Expert','AYGO']},
     {g:'Renault', i:['SC','SC2/Meg2','RL1','RL2','RL3','LG1','LG2','Trafic','Master 3']},
     {g:'Opel', i:['OA/OZ пл.','OA/OZ шт.','OVC','OVB','OAJ']},
     {g:'Audi', i:['В5','B6/B7','B6/B7-D','А6С6','A4B8','Q7']},
     {g:'Mazda / Mitsubishi', i:['M35','M6 гидро','CX7','Colt']},
-    {g:'Chrysler / Dodge', i:['V4','V5','PT']}
+    {g:'Chrysler / Dodge', i:['V4','V5','PT']},
+    {g:'Fiat / Alfa Romeo', i:['DOBLO','AR147']},
+    {g:'Nissan / Honda / Suzuki / Toyota', i:['N16','P12','CRV','5D','Swift','AYGO']}
   ]
   let h = '<p style="font-size:17px;font-weight:700;margin-bottom:16px">Каталог цен</p>'
   groups.forEach(g => {
