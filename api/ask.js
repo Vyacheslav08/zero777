@@ -108,6 +108,11 @@ const SYSTEM_PROMPT = `Ты — эксперт-консультант по б/у
 - **CX7** — Mazda CX-7. Дроп 25.000 ₽
 - **Colt** — Mitsubishi Colt (2004-2012). Дроп 39.200 ₽
 
+### Chrysler / Dodge
+- **V4** — Chrysler Voyager / Dodge Caravan 4 пок. (2001-2008). Дроп 19.800 ₽
+- **V5** — Chrysler Voyager / Dodge Caravan 5 пок. (2008+, Caravan до 2024). Дроп 21.200 ₽
+- **PT** — Chrysler PT Cruiser (2000-2010), бывает ±D (датчик уточнять). Дроп 17.500 ₽
+
 ---
 
 ## КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА (часто путают)
@@ -183,6 +188,8 @@ SAD/SAJ = Land Rover
 ZAR = Alfa Romeo
 4JG/4JM = Mercedes-Benz USA
 1G1/1G6 = Chevrolet USA
+1A4/1A8/2A4/2A8/1C4/2C4/3A4/3A8 = Chrysler (Voyager → V4/V5 по году: до 2008 = V4, с 2008 = V5)
+1D4/2D4/1D8/1B4/2B4 = Dodge (Caravan = та же рейка что Voyager: V4/V5 по году)
 1FA/1FB/1FC = Ford USA
 1HG = Honda USA
 2T1/2T2 = Toyota Canada
