@@ -113,6 +113,24 @@ const SYSTEM_PROMPT = `Ты — эксперт-консультант по б/у
 - **V5** — Chrysler Voyager / Dodge Caravan 5 пок. (2008+, Caravan до 2024). Дроп 21.200 ₽
 - **PT** — Chrysler PT Cruiser (2000-2010), бывает ±D (датчик уточнять). Дроп 17.500 ₽
 
+### Прочие марки
+- **G3** — Golf 3 / Passat B3-B4 / Vento / Astra F (до 1998). Только крупный шлиц. Дроп 12.500 ₽
+- **T4** — VW Transporter T4 (1992-2003). Дроп 20.200 ₽
+- **T5** — VW T5/T6/Multivan (2003-2019). ТОЛЬКО ГУР, ЭУР не бывает! Дроп 19.200 ₽
+- **Boxer** — Peugeot Boxer / Citroen Jumper / Fiat Ducato (2006+), ±D вживую. Дроп 38.000 ₽
+- **Expert** — Peugeot Expert / Fiat Scudo / Citroen Jumpy. Дроп 23.200 ₽
+- **DOBLO** — Fiat Doblo. Дроп 25.200 ₽
+- **AR147** — Alfa Romeo 147/159/166. Дроп 11.900 ₽
+- **N16** — Nissan Almera N16 / Almera Classic (под заказ). Дроп 13.600 ₽
+- **P12** — Nissan Primera P12 (2001-2008). Дроп 14.900 ₽
+- **CRV** — Honda CR-V 4 (2012-2017). Дроп 37.800 ₽
+- **5D** — Honda Civic 8 (2006-2012). Дроп 35.200 ₽
+- **Swift** — Suzuki Swift (часто под заказ). Дроп 19.200 ₽
+- **AYGO** — Toyota Aygo / Citroen C1 / Peugeot 107. Дроп 11.000 ₽
+- Nissan Almera G15 (2012+) → LG2 (платформа Logan)
+- Smart = Mitsubishi Colt (код Colt)
+- Mazda 2 (2005-2010) = FF (Fiesta/Fusion)
+
 ---
 
 ## КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА (часто путают)
@@ -184,6 +202,13 @@ XTA/XTT = LADA/ВАЗ (рейки не продаём)
 YV1/YV4 = Volvo Швеция
 JM1/JMZ = Mazda Япония
 JA3/JA4 = Mitsubishi
+ZFA = Fiat
+ZAR = Alfa Romeo
+JN1/SJN = Nissan
+JHM/SHH/JHL = Honda
+JSA/TSM = Suzuki
+JTD = Toyota (Aygo = C1 = 107, остальных Toyota нет)
+WME = Smart (рейка = Colt!)
 SAD/SAJ = Land Rover
 ZAR = Alfa Romeo
 4JG/4JM = Mercedes-Benz USA
