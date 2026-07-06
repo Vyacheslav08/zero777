@@ -141,7 +141,7 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
             <option>VW</option><option>Skoda</option><option>Seat</option><option>Audi</option>
             <option>BMW</option><option>Mercedes</option><option>Volvo</option><option>Ford</option>
             <option>Peugeot</option><option>Citroën</option><option>Renault</option><option>Opel</option>
-            <option>Mazda</option><option>Mitsubishi</option><option>Porsche</option>
+            <option>Mazda</option><option>Mitsubishi</option><option>Porsche</option><option>Chrysler</option>
           </select>
           <input type="number" class="vin-inp" id="my" style="letter-spacing:0;flex:1" min="1985" max="2026" placeholder="Год (из СТС)" oninput="upd()" onkeydown="if(event.key==='Enter')go()">
         </div>
@@ -227,7 +227,8 @@ const PR = {
   'B6/B7':{d:15000,r:19000},'B6/B7-D':{d:18200,r:22000},
   'А6С6':{d:24000,r:29000},'Q7':{d:35000,r:41000},'A4B8':{d:30000,r:36000},
   'M35':{d:13600,r:17500},'M6 гидро':{d:12900,r:16500},'CX7':{d:25000,r:30000},
-  'Colt':{d:39200,r:45000}
+  'Colt':{d:39200,r:45000},
+  'V4':{d:19800,r:24000},'V5':{d:21200,r:25000},'PT':{d:17500,r:21000}
 }
 
 const TP = {
@@ -264,7 +265,10 @@ const TP = {
   'OAJ':{w:'Opel Astra J / Insignia ЭУР.',cl:'Нужна адаптация ЭБУ!',say:'Есть OAJ. Нужна адаптация.'},
   'B6/B7':{w:'Audi A4 B6/B7 без датчика. ТОЛЬКО KOYO!',cl:'ZF не существует. С датчиком = B6/B7-D.',say:'Есть B6/B7. Только KOYO.'},
   'B6/B7-D':{w:'Audi A4 B6/B7 с датчиком. ТОЛЬКО KOYO!',cl:'Только KOYO.',say:'Есть B6/B7-D.'},
-  'Q7':{w:'Audi Q7 / Touareg 1 / Cayenne 1 (до 2010) — одна рейка!',cl:'Touareg 2 (2010+) ≠ Q7!',say:'Есть Q7. Touareg до 2010 подходит.'}
+  'Q7':{w:'Audi Q7 / Touareg 1 / Cayenne 1 (до 2010) — одна рейка!',cl:'Touareg 2 (2010+) ≠ Q7!',say:'Есть Q7. Touareg до 2010 подходит.'},
+  'V4':{w:'Chrysler Voyager / Dodge Caravan 4 поколение (2001-2008). ГУР.',cl:'Границa поколений 2007-2008 — уточни год по СТС.',say:'Есть V4.'},
+  'V5':{w:'Chrysler Voyager / Dodge Caravan 5 поколение (2008+). ГУР.',cl:'Граница поколений 2007-2008 — уточни год по СТС.',say:'Есть V5.'},
+  'PT':{w:'Chrysler PT Cruiser (2000-2010). Бывает с датчиком и без.',cl:'Уточни датчик: PT+D или PT-D.',say:'Есть PT.'}
 }
 
 const WMI = {
@@ -275,7 +279,9 @@ const WMI = {
   VF1:'Renault',VF8:'Renault',VF6:'Citroën',VF7:'Citroën',VF3:'Peugeot',
   WF0:'Ford',WF2:'Ford',X9F:'Ford',W0L:'Opel',W0V:'Opel',XUF:'Opel',XWF:'Opel',
   X7L:'Renault',VNA:'Renault',Z8T:'Peugeot',WP1:'Porsche',
-  JMZ:'Mazda',JM1:'Mazda',XMC:'Mitsubishi',JA3:'Mitsubishi'
+  JMZ:'Mazda',JM1:'Mazda',XMC:'Mitsubishi',JA3:'Mitsubishi',
+  '1A4':'Chrysler','1A8':'Chrysler','2A4':'Chrysler','2A8':'Chrysler','1C4':'Chrysler','2C4':'Chrysler','3A4':'Chrysler','3A8':'Chrysler',
+  '1D4':'Chrysler','2D4':'Chrysler','1D8':'Chrysler','1B4':'Chrysler','2B4':'Chrysler'
 }
 const YR = {
   '1':2001,'2':2002,'3':2003,'4':2004,'5':2005,'6':2006,'7':2007,'8':2008,'9':2009,
@@ -544,6 +550,14 @@ function getRC(info, ans) {
   } else if (br === 'Mitsubishi') {
     c = [{code:'Colt'}]
 
+  } else if (br === 'Chrysler') {
+    if (!ans.crm && info.year) {
+      if (info.year >= 2009) ans.crm = 'v5'
+      else if (info.year >= 2001 && info.year <= 2006) ans.crm = 'v4'
+    }
+    if (!ans.crm) q = [ask('crm','Модель Chrysler / Dodge:',[opt('v4','Voyager / Caravan 4 (2001-2008)','V4'),opt('v5','Voyager / Caravan 5 (2008+)','V5'),opt('pt','PT Cruiser (2000-2010)','PT')])]
+    else { const m = {v4:'V4',v5:'V5',pt:'PT'}; c = [{code:m[ans.crm]}] }
+
   } else return { candidates:[], questions:[], unknown:true }
 
   return { candidates:c, questions:q }
@@ -554,7 +568,7 @@ function rq() {
   const qc = document.getElementById('qc'), qi = document.getElementById('qi'), pb = document.getElementById('pb')
   qi.innerHTML = '<p class="lbl" style="margin-bottom:4px">' + ST.vin + '</p>'
   if (r.unknown || !ST.info?.brand) {
-    const brands = ['VW','Skoda','Seat','Audi','BMW','Mercedes','Volvo','Ford','Peugeot','Citroën','Renault','Opel','Mazda','Mitsubishi']
+    const brands = ['VW','Skoda','Seat','Audi','BMW','Mercedes','Volvo','Ford','Peugeot','Citroën','Renault','Opel','Mazda','Mitsubishi','Chrysler']
     let btns = ''
     brands.forEach(b => { btns += '<button class="opt" style="width:auto;padding:7px 13px;font-size:12px;animation:none" onclick="sbr(\'' + b + '\')">' + b + '</button>' })
     qc.innerHTML = '<div class="card" style="text-align:center;padding:24px"><i class="ti ti-help-circle" style="font-size:34px;color:var(--tx3)"></i><p style="font-size:15px;font-weight:600;margin:10px 0 6px">Марка не распознана</p><p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Выберите вручную:</p><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">' + btns + '</div></div>'
@@ -642,7 +656,8 @@ function renderCat() {
     {g:'Renault', i:['SC','SC2/Meg2','RL1','RL2','RL3','LG1','LG2','Trafic','Master 3']},
     {g:'Opel', i:['OA/OZ пл.','OA/OZ шт.','OVC','OVB','OAJ']},
     {g:'Audi', i:['В5','B6/B7','B6/B7-D','А6С6','A4B8','Q7']},
-    {g:'Mazda / Mitsubishi', i:['M35','M6 гидро','CX7','Colt']}
+    {g:'Mazda / Mitsubishi', i:['M35','M6 гидро','CX7','Colt']},
+    {g:'Chrysler / Dodge', i:['V4','V5','PT']}
   ]
   let h = '<p style="font-size:17px;font-weight:700;margin-bottom:16px">Каталог цен</p>'
   groups.forEach(g => {
