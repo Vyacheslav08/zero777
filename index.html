@@ -185,13 +185,13 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
     </div>
     <div class="card chat-box">
       <div class="chat-msgs" id="chat-msgs">
-        <div class="msg-ai">Привет! Спроси меня про любую рейку — марку, модель, год или VIN. Подберу и скажу что ответить клиенту.</div>
+        <div class="msg-ai">Привет! Я твой помощник по рейкам. Подберу рейку по марке/модели/году/VIN и отвечу на любой вопрос — есть ли на такую машину, чем отличаются модели, что сказать клиенту. Спрашивай что угодно.</div>
       </div>
       <div id="chat-hints" class="chat-hints">
         <button class="hint" onclick="fillChat('BMW E46 2003 задний привод')">BMW E46 2003</button>
-        <button class="hint" onclick="fillChat('Focus 2 гидро или ЭУР?')">Focus 2 гидро?</button>
-        <button class="hint" onclick="fillChat('Touareg 2012 какая рейка?')">Touareg 2012</button>
-        <button class="hint" onclick="fillChat('Octavia 2010 что взять?')">Octavia 2010</button>
+        <button class="hint" onclick="fillChat('Есть рейки на BMW X5?')">Есть на X5?</button>
+        <button class="hint" onclick="fillChat('Чем отличается FR3+ от FR3-?')">FR3+ или FR3-?</button>
+        <button class="hint" onclick="fillChat('Touareg это Q7 по рейке?')">Touareg = Q7?</button>
       </div>
       <div class="chat-in">
         <input type="text" class="inp" id="chat-inp" placeholder="Марка, модель, год или вопрос..." style="flex:1" onkeydown="if(event.key==='Enter')sendChat()">
