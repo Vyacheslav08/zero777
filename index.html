@@ -449,7 +449,7 @@ const MODELS = {
   'Ford': [
     {l:'Focus 1 (1998-2005)', pre:{fo:'f1'}},
     {l:'Focus 2 / C-Max гидро (2004-2011)', pre:{fo:'f2g'}},
-    {l:'Focus 3 ЭУР / Kuga 2 (2011+)', pre:{fo:'f3e'}},
+    {l:'Focus 3 / Kuga 2 / C-Max 2012+', pre:{fo:'f3'}},
     {l:'Fiesta / Fusion', pre:{fo:'fie'}},
     {l:'Mondeo 3 (2000-2007)', pre:{fo:'m3'}},
     {l:'Mondeo 4 / S-Max / Galaxy 2', pre:{fo:'m4'}},
@@ -690,8 +690,12 @@ function getRC(info, ans) {
     } else c = [{code:'XC70'}]
 
   } else if (br === 'Ford') {
-    if (!ans.fo) q = [ask('fo','Модель Ford:',[opt('f1','Focus 1 / Transit Connect до 2012','FF1'),opt('f2g','Focus 2 гидро / C-Max до 2011 / Volvo V50','FFCM'),opt('f3e','Focus 3 ЭУР / Kuga 2 / C-Max 2012+','FF3'),opt('fie','Fiesta / Fusion','FF'),opt('m3','Mondeo 3 (2000-2007)','FM3'),opt('m4','Mondeo 4 / S-Max / Galaxy','FM4')])]
-    else { const m = {f1:'FF1',f2g:'FFCM',f3e:'FF3',fie:'FF',m3:'FM3',m4:'FM4'}; c = [{code:m[ans.fo]}] }
+    if (!ans.fo) q = [ask('fo','Модель Ford:',[opt('f1','Focus 1 / Transit Connect до 2012','FF1'),opt('f2g','Focus 2 гидро / C-Max до 2011 / Volvo V50','FFCM'),opt('f3','Focus 3 / Kuga 2 / C-Max 2012+',null),opt('fie','Fiesta / Fusion','FF'),opt('m3','Mondeo 3 (2000-2007)','FM3'),opt('m4','Mondeo 4 / S-Max / Galaxy','FM4')])]
+    else if (ans.fo === 'f3') c = [{code:'FF3 или FFCM', combo:true, tp:{
+      w:'Ford Focus 3 / Kuga 2 / C-Max 2012+. Бывает электрическая (FF3) и гидравлическая (FFCM).',
+      cl:'Уточни у клиента какая рейка стоит в машине: электрическая или гидравлическая.',
+      say:'Если у клиента электрическая — подходит FF3, если гидравлическая — FFCM.'}}]
+    else { const m = {f1:'FF1',f2g:'FFCM',fie:'FF',m3:'FM3',m4:'FM4'}; c = [{code:m[ans.fo]}] }
 
   } else if (br === 'Peugeot') {
     if (!ans.pm && info.vin && info.vin.substring(0,3) === 'VF3') {
@@ -838,7 +842,7 @@ function showRes(cands) {
   QD = 0
   let h = '<button class="btn-back" onclick="gs(\'sc-main\');document.getElementById(\'vi\').value=\'\'"><i class="ti ti-arrow-left" style="font-size:15px"></i>Новый подбор</button>'
   cands.forEach(c => {
-    const pr = PR[c.code], tp = TP[c.code], no = c.code === '⚠ нет'
+    const pr = PR[c.code], tp = c.tp || TP[c.code], no = c.code === '⚠ нет'
     const stock = getStock(c.code)
     h += '<div class="card" style="margin-bottom:12px;animation:scaleIn .3s cubic-bezier(.22,1,.36,1)">'
     h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">'
@@ -847,6 +851,7 @@ function showRes(cands) {
     if (pr && pr.note) h += '<div class="nc"><i class="ti ti-clock" style="font-size:11px"></i>' + pr.note + '</div>'
     h += '</div>'
     if (no) h += '<span class="berr"><i class="ti ti-x" style="font-size:12px"></i>Нет</span>'
+    else if (c.combo) {}
     else if (stock !== null) {
       if (stock > 0) h += '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + stock + ' шт.</span>'
       else h += '<span class="berr"><i class="ti ti-x" style="font-size:12px"></i>Нет в наличии</span>'
