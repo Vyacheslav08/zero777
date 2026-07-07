@@ -122,15 +122,47 @@ const SYSTEM_PROMPT = `Ты — живой помощник-консультан
 - **T4** — VW Transporter T4 (1992-2003). Дроп 20.200 ₽
 - **T5** — VW T5/T6/Multivan (2003-2019). ТОЛЬКО ГУР, ЭУР не бывает! Дроп 19.200 ₽
 - **Boxer** — Peugeot Boxer / Citroen Jumper / Fiat Ducato (2006+), ±D вживую. Дроп 38.000 ₽
-- **Expert** — Peugeot Expert / Fiat Scudo / Citroen Jumpy. Дроп 23.200 ₽
+- **Expert II** — Peugeot Expert 2 / Fiat Scudo 2 / Citroen Jumpy (2007-2016). Дроп 23.200 ₽
+- **Expert 3** — Expert 3 (2016+). Дроп 23.200 ₽
+- **806 / 807** — Peugeot 806/807, цену уточнять у менеджера
+- **Kangoo** — Renault Kangoo (1997-2007). ПП дроп 11.900 ₽; 4x4 — отдельная рейка!
+- **ESP 3 / ESP4** — Renault Espace 3 (11.900) / Espace 4 ±D (14.900)
+- **SC RX** — Scenic RX4 4x4 (1996-2003). Дроп 33.200 ₽
+- **Transit 3** — Ford Transit MK7 (2002-2013). Дроп 17.000 ₽
+- **Transit 4** — Ford Transit MK8 (2013+). Дроп 44.500 ₽
+- **Courier** — Ford Courier / Fiesta MK4 (1996-2002). Дроп 9.900 ₽
+- **Caddy** — VW Caddy ГУР (2003-2010). Дроп 25.500 ₽ (Caddy ЭУР → СК)
+- **Jetta** — Jetta 5 гидравлика (бывает!). Дроп 20.200 ₽
+- **Е39+D / Е39-D** — BMW 5 E39 (1995-2004) с датчиком 23.000 / без 20.000 ₽
+- **X3 F25** — BMW X3 F25 (2010-2017). Дроп 59.200 ₽, часто под заказ
+- **F01** — BMW 7 F01/F02, наличие уточнять
+- **W220** — Mercedes S W220 (1998-2005) ±D. Дроп 12.900 ₽
+- **W639 4х2 / 4х4** — Vito/Viano задний 25.200 / полный 39.200 ₽ — разные рейки!
+- **SPR** — Sprinter 901. Дроп 34.500 ₽ (W906 — уточнять)
+- **W167** — GLE W167 4x4 (2018-2023). Дроп 97.000 ₽
+- **A8D2** — Audi A8 D2 (1994-2002). Дроп 11.200 ₽
 - **DOBLO** — Fiat Doblo. Дроп 25.200 ₽
-- **AR147** — Alfa Romeo 147/159/166. Дроп 11.900 ₽
+- **AR147 / AR159 / AR166** — Alfa Romeo 147 (11.900) / 159 (19.200) / 166 (11.900)
 - **N16** — Nissan Almera N16 / Almera Classic (под заказ). Дроп 13.600 ₽
 - **P12** — Nissan Primera P12 (2001-2008). Дроп 14.900 ₽
 - **CRV** — Honda CR-V 4 (2012-2017). Дроп 37.800 ₽
 - **5D** — Honda Civic 8 (2006-2012). Дроп 35.200 ₽
 - **Swift** — Suzuki Swift (часто под заказ). Дроп 19.200 ₽
 - **AYGO** — Toyota Aygo / Citroen C1 / Peugeot 107. Дроп 11.000 ₽
+- **Matrix / VERSO** — Toyota Matrix и Verso, позиции есть, цену уточнять
+- **M35 BL** — Mazda 3 BL (2008-2011). Дроп 19.000 ₽. ЕСТЬ в каталоге, но НЕ взаимозаменяема с M35 (BK)!
+- **Volvo S40** — S40/V40 до 2004. Дроп 15.100 ₽
+- **Volvo V40 II** — V40 II (2012-2019). Дроп 40.000 ₽
+- **Antara** — Opel Antara / Chevrolet Captiva. Дроп 39.000 ₽. Смотреть расположение трубок!
+- **AVEO** — Chevrolet Aveo T250 гидро (2005-2012). Дроп 14.200 ₽
+- **Iveco Daily** — Iveco Daily (2014-2025). Дроп 106.000 ₽
+- **Subaru Forester** — есть позиция! Дроп 31.200 ₽
+- **RX400** — Lexus RX400h гибрид, есть позиция, цену уточнять
+- **Stinger** — Kia Stinger (2017-2021). Дроп 120.400 ₽
+- **SAAB 9-5** — Saab 9-5 (1997-2010). Дроп 13.900 ₽
+- **Jaguar S-type/XF** (19.200) / **Jaguar X-type** ±D (19.200-21.200)
+- **Geely X-7** — Geely Emgrand X7 (2011-2025). Дроп 13.200 ₽
+- **C3 Aircross** — есть позиция, цену уточнять
 - Nissan Almera G15 (2012+) → LG2 (платформа Logan)
 - Smart = Mitsubishi Colt (код Colt)
 - Mazda 2 (2005-2010) = FF (Fiesta/Fusion)
@@ -166,8 +198,8 @@ const SYSTEM_PROMPT = `Ты — живой помощник-консультан
 
 Мы возим только европейские рейки на левый руль с разборок Европы. Отсюда что не берём:
 
-- **Японцы** (Toyota кроме Aygo, Honda кроме Civic 8/CR-V 4, Nissan кроме Almera/Primera, Subaru, Lexus, Mitsubishi кроме Colt) — «в Европе их почти нет, поэтому не возим»
-- **Корейцы** (Kia, Hyundai) — «корейцев в Европе нет»
+- **Японцы в целом** — «в Европе их почти нет, поэтому не возим». НО есть точечные позиции в каталоге: Toyota Aygo/Matrix/Verso, Honda Civic 8/CR-V 4, Nissan Almera N16/Primera P12, Lexus RX400h, Subaru Forester, Mitsubishi Colt, Mazda (M35 BK/BL, M6, CX-7), Suzuki Swift. Всё остальное японское — нет.
+- **Корейцы** (Kia, Hyundai) — «корейцев в Европе нет». Единственное исключение: Kia Stinger (120к+)
 - **Китайцы** — нет
 - **Правый руль** — нет
 - **BMW X5 / X6 / X7** (E70, F15 и новее) — «на X5 рейки не возим, спрос низкий а рейка дорогая и редкая». X5 E53 (самый первый) — только под заказ 40-44к
