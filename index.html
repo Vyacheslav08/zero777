@@ -206,7 +206,7 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
 <script>
 const PW = 'Zero+igm777'
 const SHEET_ID = '1LgOzjfN3fO9sg6gYTiJQDqQ7fspHhapiTKEfWVV0c_I'
-let H = [], N = 0, RACKS = []
+let H = [], N = 0
 
 const PR = {
   'СК':{d:24000,r:27000},'3Т':{d:32000,r:36000},'БК':{d:43500,r:49000},'КР':{d:47000,r:53000},
@@ -330,34 +330,77 @@ function dv(v) {
   return { vin:v, brand, year: YR[v[9]] || null, known: !!brand }
 }
 
-// Google Sheets
+// Google Sheets — наличие со склада
+let STOCK_FULL = {}, STOCK_BASE = {}
+
+// правильный разбор CSV (учитывает запятые и кавычки внутри полей)
+function parseCSV(text) {
+  const rows = []; let row = [], field = '', inQ = false
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i]
+    if (inQ) {
+      if (c === '"') { if (text[i+1] === '"') { field += '"'; i++ } else inQ = false }
+      else field += c
+    } else {
+      if (c === '"') inQ = true
+      else if (c === ',') { row.push(field); field = '' }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = '' }
+      else if (c !== '\r') field += c
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row) }
+  return rows
+}
+
+// сведение кириллических букв-двойников к латинице (Е90 = E90 и т.п.)
+const HOMO = {'А':'A','В':'B','Е':'E','К':'K','М':'M','Н':'H','О':'O','Р':'P','С':'C','Т':'T','У':'Y','Х':'X'}
+// нормализация кода: заглавные, кирилл→лат двойники, убираем пробелы/кавычки/точки
+function normCode(s) {
+  return (s || '').toString().toUpperCase()
+    .replace(/[АВЕКМНОРСТУХ]/g, ch => HOMO[ch])
+    .replace(/[«»""'".()\s]/g,'')
+}
+// базовый код без суффикса датчика/крепления (+D, -D, +, -, шт, пл)
+function baseCode(s) {
+  return normCode((s || '').toString().toUpperCase().replace(/\s*([+\-]\s?D|[+\-]|ШТ\.?|ПЛ\.?)\s*$/i,''))
+}
+
 async function loadSheets() {
   try {
     const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv'
     const r = await fetch(url), t = await r.text()
-    const rows = t.split('\n').map(l => l.split(',').map(c => c.replace(/^"|"$/g,'').trim()))
-    RACKS = []
+    const rows = parseCSV(t)
+    STOCK_FULL = {}; STOCK_BASE = {}; let cnt = 0
     for (const row of rows) {
-      const name = (row[0]||'').trim()
+      const name = (row[0] || '').trim()
       if (!name || !name.match(/рейк/i)) continue
-      const m = name.match(/[""«]([^""»\n]{1,20})[""»]/)
-      if (!m) continue
-      const code = m[1].trim()
-      const inStock = parseInt(row[1]) || 0
-      const d = parseInt((row[3]||'').replace(/\D/g,'')) || 0
-      const r2 = parseInt((row[4]||'').replace(/\D/g,'').split('-')[0]) || 0
-      if (d > 0 && PR[code]) { PR[code].d = d; if (r2 > 0) PR[code].r = r2 }
-      if (inStock >= 0) RACKS.push({ code, inStock })
+      // убираем префикс "Рулевая рейка" (с возможной лишней кавычкой), чтобы не поймать его в кавычки
+      const clean = name.replace(/^["“«\s]*рулев\S*\s+рейка\s*/i, '')
+      const qm = clean.match(/["“«]([^"”»]{1,25})["”»]/)
+      if (!qm) continue
+      let raw = qm[1].trim()
+      // захват суффикса сразу после закрывающей кавычки: + / - / +D / -D / шт / пл
+      const after = clean.slice(qm.index + qm[0].length)
+      const sm = after.match(/^\s*([+\-]\s?D|[+\-]|ШТ\.?|ПЛ\.?)/i)
+      if (sm) raw += sm[1].replace(/\s/g,'')
+      const st = parseInt(row[1]) || 0
+      const kf = normCode(raw), kb = baseCode(raw)
+      if (kf) STOCK_FULL[kf] = (STOCK_FULL[kf] || 0) + st
+      if (kb) STOCK_BASE[kb] = (STOCK_BASE[kb] || 0) + st
+      if (st > 0) cnt++
     }
-    const total = RACKS.filter(r => r.inStock > 0).length
     const el = document.getElementById('total-cnt')
-    if (el) el.textContent = total + ' позиций'
+    if (el) el.textContent = cnt + ' позиций'
   } catch(e) { console.warn('Sheets error', e) }
 }
 
+// наличие по коду рейки: сначала точное совпадение, потом по базовому коду
 function getStock(code) {
-  const r = RACKS.find(r => r.code.toUpperCase() === code.toUpperCase())
-  return r ? r.inStock : null
+  const kf = normCode(code)
+  if (kf in STOCK_FULL) return STOCK_FULL[kf]
+  const kb = baseCode(code)
+  if (kb in STOCK_BASE) return STOCK_BASE[kb]
+  return null
 }
 
 // Navigation
