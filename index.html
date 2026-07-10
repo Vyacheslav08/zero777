@@ -464,7 +464,8 @@ const MODELS = {
     {l:'Octavia Tour / A4', code:'G4'},
     {l:'Octavia A5 (2004-2012)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
     {l:'Octavia A7 / A8 (2013+)', pre:{vm:'ok7', vm13:'ok7'}},
-    {l:'Superb 1', code:'В5'},
+    {l:'Superb 1 (до 2008)', code:'В5'},
+    {l:'Superb 2 (2008-2015) — платформа Passat B6/B7', pre:{pw2:'e', vm09:'pt', vm13:'pb67'}},
     {l:'Superb 3 (2015+)', pre:{vm:'ok7', vm13:'ok7'}},
     {l:'Yeti', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
     {l:'Kodiaq', pre:{vm:'ok7'}}
@@ -712,6 +713,12 @@ function getRC(info, ans) {
   const opt = (v,l,cd) => ({ value:v, label:l, code:cd })
 
   if (['VW','Skoda','Seat'].includes(br)) {
+    // Skoda: код кузова в позициях 7-8 VIN (TMB...3T.. = Superb 2, 3V = Superb 3)
+    if (info.vin && info.vin.length === 17 && info.vin.substring(0,3).toUpperCase() === 'TMB' && !ans.vm && !ans.vm13 && !ans.vm09 && !ans.pw2) {
+      const sk78 = info.vin.substring(6,8).toUpperCase()
+      if (sk78 === '3T') { ans.pw2 = 'e'; ans.vm09 = 'pt'; ans.vm13 = 'pb67' }      // Superb 2 = платформа Passat B6/B7
+      else if (sk78 === '3V' || sk78 === 'NX') { ans.vm = 'ok7'; ans.vm13 = 'ok7' } // Superb 3 = MQB → КР
+    }
     if (yr >= 2016) {
       if (!ans.vm) q = [ask('vm','Уточните модель:',[opt('ok7','Octavia A7/A8, Golf 7/8, Jetta 6, Superb 3, Tiguan 2','КР'),opt('pb8','Passat B8','В8'),opt('ot','Другая',null)])]
       else c = [ans.vm === 'pb8' ? {code:'В8'} : {code:'КР'}]
