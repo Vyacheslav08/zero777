@@ -285,7 +285,7 @@ const TP = {
   'W212 4x4':{w:'Mercedes E W212 4Matic — под заказ.',cl:'Закуп ~85к, 7-14 дней.',say:'W212 4Matic под заказ 7-14 дней.'},
   'W164':{w:'ML W164 / R W251 (2005-2012) — только ГУР.',cl:'W164 ЭУР не продаём.',say:'Есть W164. ГУР.'},
   'XC70':{w:'Volvo S60/S80/V60/XC60/XC70 — без кронштейна.',cl:'XC60 = XC70 рейка!',say:'Есть XC70.'},
-  'V70':{w:'Volvo V70/XC90 / S60-S80 до 2007 — с кронштейном/подушкой под мотор.',cl:'ОБЯЗАТЕЛЬНО уточни у клиента: крепление ШТУЦЕРА или ПЛАНКА? И есть ли ДАТЧИК? Бывают все варианты, не взаимозаменяемы.',say:'Есть V70. Уточни у клиента: штуцера или планка, и есть ли датчик.'},
+  'V70':{w:'Volvo V70/XC90 / S60-S80 до 2007 — с кронштейном/подушкой под мотор.',cl:'ОБЯЗАТЕЛЬНО уточни у клиента: крепление ШТУЦЕРА или ПЛАНКА? И есть ли ДАТЧИК? Бывают все варианты, не взаимозаменяемы. Правильная схема по VIN пробивается ТОЛЬКО на autoostrov.by — другие сайты могут дать неверный результат.',say:'Есть V70. Уточни у клиента: штуцера или планка, и есть ли датчик. Схему смотри строго на autoostrov.by.'},
   'FFCM':{w:'Ford Focus 2 ГИДРО / C-Max до 2011 / Volvo V50.',cl:'Focus 3 ЭУР = FF3, не FFCM!',say:'Есть FFCM. Focus 2 гидро.'},
   'FF3':{w:'Ford Focus 3 ЭУР / Kuga 2 / C-Max 2012+.',cl:'Гидро Focus 2 = FFCM.',say:'Есть FF3. ЭУР версия.'},
   'FM4':{w:'Mondeo 4 / S-Max / Galaxy — одна рейка.',cl:'Mondeo 4 = S-Max = Galaxy.',say:'Есть FM4.'},
@@ -448,7 +448,7 @@ const MODELS = {
     {l:'Passat B6 / B7 / CC', pre:{pw2:'e', vm09:'pt', vm13:'pb67'}},
     {l:'Passat B8 (2015+)', pre:{vm:'pb8'}},
     {l:'Tiguan 1 (2011-2015)', pre:{vm09:'pt', vm13:'pb67'}},
-    {l:'Tiguan 2 (2016+)', pre:{vm:'ok7'}},
+    {l:'Tiguan 2 (2016+)', pre:{vm:'pb8'}},
     {l:'Touran', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
     {l:'Caddy (ЭУР)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
     {l:'Sharan 1 / Alhambra (до 2010)', pre:{pw2:'g', vgm:'sh'}},
@@ -726,8 +726,8 @@ function getRC(info, ans) {
       say:'Скорее всего 3Т. На Superb 2 в редких случаях бывает другая рейка — уточни по схеме.'
     }}], questions:[] }
     if (yr >= 2016) {
-      if (!ans.vm) q = [ask('vm','Уточните модель:',[opt('ok7','Octavia A7/A8, Golf 7/8, Jetta 6, Superb 3, Tiguan 2','КР'),opt('pb8','Passat B8','В8'),opt('ot','Другая',null)])]
-      else c = [ans.vm === 'pb8' ? {code:'В8'} : {code:'КР'}]
+      if (!ans.vm) q = [ask('vm','Уточните модель:',[opt('ok7','Octavia A7/A8, Golf 7/8, Jetta 6, Superb 3','КР'),opt('pb8','Passat B8 / Tiguan 2 (2016+)','В8'),opt('ot','Другая',null)])]
+      else c = [ans.vm === 'pb8' ? {code:'В8', label:'Скорее всего В8 — сверить по схеме на autoostrov.by'} : {code:'КР'}]
     } else if (yr >= 2013) {
       if (!ans.vm13) q = [ask('vm13','Модель:',[opt('ok7','Octavia A7, Golf 7/8, Jetta 6','КР'),opt('pb67','Passat B6/B7, Tiguan 1, CC, Sharan 2','БК'),opt('ot3','Touran / Golf 5-6 / Другой','3Т')])]
       else { const m={ok7:{code:'КР'},pb67:{code:'БК'},ot3:{code:'3Т'}}; c = [m[ans.vm13]||{code:'КР'}] }
@@ -804,8 +804,11 @@ function getRC(info, ans) {
       if (!ans.w0s) q = [ask('w0s','Датчик W210:',[opt('y','Есть датчик','W210+D'),opt('n','Без датчика','W210')])]
       else c = [{code: ans.w0s === 'y' ? 'W210+D' : 'W210'}]
     } else if (ans.mm === 'w204') {
-      if (!ans.w4s) q = [ask('w4s','Датчик W204?',[opt('y','Есть датчик','W204+D'),opt('n','Без датчика','W204')])]
-      else c = [{code: ans.w4s === 'y' ? 'W204+D' : 'W204'}]
+      if (!ans.w4d) q = [ask('w4d','Привод W204:',[opt('r','Задний привод',null),opt('4','Полный привод 4Matic',null)])]
+      else if (!ans.w4t) q = [ask('w4t','Усилитель W204:',[opt('g','ГУР — гидравлика (трубки)',null),opt('e','ЭУР — электро (только провода)',null)])]
+      else if (ans.w4t === 'e') c = [{code:'W204 ЭУР', label:'W204 ЭУР ('+(ans.w4d==='4'?'полный':'задний')+' привод) — под заказ, уточнить цену и срок у менеджера'}]
+      else if (!ans.w4s) q = [ask('w4s','Датчик W204 (ГУР):',[opt('y','Есть датчик','W204+D'),opt('n','Без датчика','W204')])]
+      else c = [{code: ans.w4s === 'y' ? 'W204+D' : 'W204', label: ans.w4d==='4' ? 'Полный привод 4Matic — та же рейка, что и задний' : undefined}]
     } else if (ans.mm === 'w212') {
       if (!ans.w2d) q = [ask('w2d','Привод W212:',[opt('r','Задний привод','W212'),opt('4','Полный 4Matic','W212 4x4')])]
       else c = [{code: ans.w2d === '4' ? 'W212 4x4' : 'W212'}]
@@ -1063,7 +1066,7 @@ function renderCat() {
   const groups = [
     {g:'VAG', i:['СК','3Т','БК','КР','В8','G3','G4','В5','Sh+','T4','T5','Caddy','Jetta']},
     {g:'BMW', i:['Е46+','Е46-','E90','E90 ЭУР','Е39+D','Е39-D','E60','F20/F30','F10','F20/F21','X3 E83+D','X3 E83-D','X3 F25']},
-    {g:'Mercedes', i:['W168','W169','W246','W203','W203-D','W204','W204+D','W205','W210','W210+D','W211+D','W212','W212 4x4','W220','W163','W164','W167','W639 4х2','W639 4х4','SPR']},
+    {g:'Mercedes', i:['W168','W169','W246','W203','W203-D','W204','W204+D','W204 ЭУР','W205','W210','W210+D','W211+D','W212','W212 4x4','W220','W163','W164','W167','W639 4х2','W639 4х4','SPR']},
     {g:'Volvo', i:['XC70','V70','Volvo S40','Volvo V40 II']},
     {g:'Ford', i:['FF','FF1','FFCM','FF3','FM3','FM4','Courier','Transit 3','Transit 4']},
     {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207','407','407-D','406','607','508','Boxer','Expert II','Expert 3','AYGO']},
