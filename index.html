@@ -872,7 +872,7 @@ function getRC(info, ans) {
     }
 
   } else if (br === 'Citroën') {
-    if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009+)','207'),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
+    if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика (2002-2009)','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009+)','207'),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
     else if (ans.cm === 'c4') {
       if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+')])]
       else c = [{code: ans.esp === 'y' ? 'FR3-' : 'FR3+'}]
