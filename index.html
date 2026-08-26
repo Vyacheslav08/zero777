@@ -228,7 +228,7 @@ const PR = {
   '207':{d:23200,r:27000},'407':{d:17200,r:21000},'407-D':{d:15400,r:19000},
   '406':{d:13000,r:16500},'607':{d:20000,r:25000},'508':{d:35000,r:41000},
   'SC':{d:10000,r:13500},'SC2/Meg2':{d:10000,r:14500},
-  'RL1':{d:10000,r:13000},'RL2':{d:14000,r:18000},'RL3':{d:31200,r:36000},
+  'RL1':{d:9900,r:13000},'RL1+D':{d:9900,r:13000},'RL2':{d:14000,r:18000},'RL3':{d:31200,r:36000},
   'LG1':{d:12000,r:15500},'LG2':{d:14000,r:18000},
   'Trafic':{d:20000,r:25000},'Master 3':{d:22000,r:27000},
   'OA/OZ пл.':{d:13100,r:17000},'OA/OZ шт.':{d:13100,r:17000},
@@ -905,12 +905,16 @@ function getRC(info, ans) {
     }
 
   } else if (br === 'Renault') {
-    if (!ans.rm) q = [ask('rm','Модель:',[opt('sc','Scenic 1 / Megane 1 до 2003 (передний привод)','SC'),opt('scrx','Scenic RX4 4x4 (1996-2003)','SC RX'),opt('sc2','Scenic 2 / Megane 2 (2002-2009)','SC2/Meg2'),opt('rl1','Laguna 1','RL1'),opt('rl2','Laguna 2','RL2'),opt('rl3','Laguna 3 / Latitude','RL3'),opt('lg1','Logan 1 / Sandero 1 до 2012','LG1'),opt('lg2','Logan рестайл 2012+ / Logan 2','LG2'),opt('kg','Kangoo (1997-2007)',null),opt('e3','Espace 3','ESP 3'),opt('e4','Espace 4','ESP4'),opt('tr','Trafic / Vivaro','Trafic'),opt('ms','Master 3','Master 3')])]
+    if (!ans.rm) q = [ask('rm','Модель:',[opt('sc','Scenic 1 / Megane 1 до 2003 (передний привод)','SC'),opt('scrx','Scenic RX4 4x4 (1996-2003)','SC RX'),opt('sc2','Scenic 2 / Megane 2 (2002-2009)','SC2/Meg2'),opt('rl1','Laguna 1',null),opt('rl2','Laguna 2','RL2'),opt('rl3','Laguna 3 / Latitude','RL3'),opt('lg1','Logan 1 / Sandero 1 до 2012','LG1'),opt('lg2','Logan рестайл 2012+ / Logan 2','LG2'),opt('kg','Kangoo (1997-2007)',null),opt('e3','Espace 3','ESP 3'),opt('e4','Espace 4','ESP4'),opt('tr','Trafic / Vivaro','Trafic'),opt('ms','Master 3','Master 3')])]
     else if (ans.rm === 'kg') {
       if (!ans.kgd) q = [ask('kgd','Привод Kangoo:',[opt('f','Передний привод','Kangoo'),opt('4','4x4','Kangoo 4х4')])]
       else c = [{code: ans.kgd === '4' ? 'Kangoo 4х4' : 'Kangoo'}]
     }
-    else { const m = {sc:'SC',scrx:'SC RX',sc2:'SC2/Meg2',rl1:'RL1',rl2:'RL2',rl3:'RL3',lg1:'LG1',lg2:'LG2',e3:'ESP 3',e4:'ESP4',tr:'Trafic',ms:'Master 3'}; c = [{code:m[ans.rm]}] }
+    else if (ans.rm === 'rl1') {
+      if (!ans.rl1d) q = [ask('rl1d','Датчик на рейке Laguna 1:',[opt('y','Есть датчик','RL1+D'),opt('n','Без датчика','RL1')])]
+      else c = [{code: ans.rl1d === 'y' ? 'RL1+D' : 'RL1', label:'RL1+D можно ставить и вместо обычной RL1 — цена одинаковая, разница только в датчике'}]
+    }
+    else { const m = {sc:'SC',scrx:'SC RX',sc2:'SC2/Meg2',rl2:'RL2',rl3:'RL3',lg1:'LG1',lg2:'LG2',e3:'ESP 3',e4:'ESP4',tr:'Trafic',ms:'Master 3'}; c = [{code:m[ans.rm]}] }
 
   } else if (br === 'Opel') {
     if (!ans.om && info.vin) {
@@ -1109,7 +1113,7 @@ function renderCat() {
     {g:'Volvo', i:['XC70','V70','Volvo S40','Volvo V40 II']},
     {g:'Ford', i:['FF','FF1','FFCM','FF3','FM3','FM4','Courier','Transit 3','Transit 4']},
     {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207','407','407-D','406','607','508','Boxer','Expert II','Expert 3','AYGO']},
-    {g:'Renault', i:['SC','SC RX','SC2/Meg2','RL1','RL2','RL3','LG1','LG2','Kangoo','ESP 3','ESP4','Trafic','Master 3']},
+    {g:'Renault', i:['SC','SC RX','SC2/Meg2','RL1','RL1+D','RL2','RL3','LG1','LG2','Kangoo','ESP 3','ESP4','Trafic','Master 3']},
     {g:'Opel / Chevrolet', i:['OA/OZ пл.','OA/OZ шт.','OVC','OVB','OAJ','Antara','AVEO']},
     {g:'Audi', i:['В5','B6/B7','B6/B7+D','А6С6','A4B8','Q7','A8D2']},
     {g:'Mazda / Mitsubishi', i:['M35','M35 BL','M6 гидро','CX7','Colt']},
