@@ -757,9 +757,12 @@ function getRC(info, ans) {
     } else if (yr >= 2004) {
       if (!ans.pw2) q = [ask('pw2','Тип усилителя руля?',[opt('g','ГУР — гидравлика',null),opt('e','ЭУР — электро',null)])]
       else if (ans.pw2 === 'e') c = [{code:'СК'}]
-      else if (!ans.vgm) q = [ask('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+'),opt('cdy','Caddy ГУР (2003-2010)','Caddy'),opt('jt','Jetta 5 гидравлика','Jetta')])]
-      else { const m = {g4:'G4',sh:'Sh+',cdy:'Caddy',jt:'Jetta'}; c = [{code:m[ans.vgm]}] }
-    } else c = [{code: yr <= 1997 ? 'G3' : 'G4'}]
+      else if (!ans.vgm) q = [ask('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+'),opt('cdy','Caddy ГУР (2003-2010)','Caddy'),opt('jt','Jetta 5 гидравлика','Jetta'),opt('pb5','Passat B5 / Superb 1 (до 2005)','В5')])]
+      else { const m = {g4:'G4',sh:'Sh+',cdy:'Caddy',jt:'Jetta',pb5:'В5'}; c = [{code:m[ans.vgm]}] }
+    } else if (yr >= 1998) {
+      if (!ans.vg0) q = [ask('vg0','Модель:',[opt('g4','Golf 4 / Bora / Octavia A4 Tour','G4'),opt('pb5','Passat B5 / Superb 1','В5'),opt('sh','Sharan 1 рестайлинг (с 2003)','Sh+'),opt('g3','Golf 3 / Passat B3-B4 / Vento','G3')])]
+      else { const m0 = {g4:'G4',pb5:'В5',sh:'Sh+',g3:'G3'}; c = [{code:m0[ans.vg0]}] }
+    } else c = [{code:'G3'}]
 
   } else if (br === 'Audi') {
     if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 / A6 C5 до 2005',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT / Q3 (ЭУР)',null),opt('a8','A8 D2 (1994-2002)','A8D2')])]
