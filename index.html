@@ -225,7 +225,7 @@ const PR = {
   'FF3':{d:45200,r:52000},'FM3':{d:18000,r:22000},'FM4':{d:28000,r:33000},
   'FR3+':{d:18000,r:22000},'FR3-':{d:16500,r:20000},'XSP':{d:13100,r:17000},
   'C2/C3':{d:18200,r:22000},'С5':{d:14600,r:18000},'С5 X7':{d:18000,r:22000},
-  '207':{d:23200,r:27000},'407':{d:17200,r:21000},'407-D':{d:15400,r:19000},
+  '207 (овал)':{d:23200,r:27000},'207 (круг)':{d:31200,r:35000},'407':{d:17200,r:21000},'407-D':{d:15400,r:19000},
   '406':{d:13000,r:16500},'607':{d:20000,r:25000},'508':{d:35000,r:41000},
   'SC':{d:10000,r:13500},'SC2/Meg2':{d:10000,r:14500},
   'RL1':{d:9900,r:13000},'RL1+D':{d:9900,r:13000},'RL2':{d:14000,r:18000},'RL3':{d:31200,r:36000},
@@ -287,6 +287,8 @@ const TP = {
   'W212':{w:'Mercedes E W212 (2009-2016) задний привод.',cl:'W212 4Matic — под заказ 7-14 дней!',say:'Есть W212.'},
   'W212 4x4':{w:'Mercedes E W212 4Matic — под заказ.',cl:'Закуп ~85к, 7-14 дней.',say:'W212 4Matic под заказ 7-14 дней.'},
   'W211+D':{w:'Mercedes E W211 / CLS W219 (2002-2009) с датчиком угла поворота. W219 = W211!',cl:'Без датчика = W211-D.',say:'Есть W211+D.'},
+  '207 (овал)':{w:'Peugeot 207 / Citroen C3 Picasso ЭУР — фишка датчика ОВАЛЬНАЯ (обычно ранние годы).',cl:'Форма разъёма не совпадает с круглой версией — не перепутай.',say:'Есть 207 под овальную фишку.'},
+  '207 (круг)':{w:'Peugeot 207 / Citroen C3 Picasso ЭУР — фишка датчика КРУГЛАЯ (более поздние годы).',cl:'Форма разъёма не совпадает с овальной версией — не перепутай.',say:'Есть 207 под круглую фишку.'},
   'W211-D':{w:'Mercedes E W211 / CLS W219 (2002-2009) без датчика. W219 = W211!',cl:'С датчиком = W211+D.',say:'Есть W211-D.'},
   'W164+D':{w:'ML W164 / R W251 (2005-2012) с датчиком угла поворота — только ГУР.',cl:'W164 ЭУР не продаём. Без датчика = W164-D.',say:'Есть W164+D. ГУР.'},
   'W164-D':{w:'ML W164 / R W251 (2005-2012) без датчика — только ГУР.',cl:'W164 ЭУР не продаём. С датчиком = W164+D.',say:'Есть W164-D. ГУР.'},
@@ -385,6 +387,7 @@ async function loadSheets() {
       const qm = clean.match(/["“«]([^"”»]{1,25})["”»]/)
       if (!qm) continue
       let raw = qm[1].trim()
+      if (normCode(raw) === '207') { if (/овал/i.test(clean)) raw = '207 овал'; else if (/кругл/i.test(clean)) raw = '207 круг' }
       // захват суффикса сразу после закрывающей кавычки: + / - / +D / -D / шт / пл
       const after = clean.slice(qm.index + qm[0].length)
       const sm = after.match(/^\s*([+\-]\s?D|[+\-]|ШТ\.?|ПЛ\.?)/i)
@@ -893,7 +896,11 @@ function getRC(info, ans) {
       if (c4 === '8') pgm = (info.year && info.year <= 2005) ? 'p406' : 'p508'
       if (pgm) ans.pm = pgm
     }
-    if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/408/Partner B9/C4',null),opt('p207','207 / C3 Picasso ЭУР','207'),opt('pm59','Partner M59 / Xsara Picasso','XSP'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508'),opt('bx','Boxer / Jumper / Ducato','Boxer'),opt('exii','Expert II / Scudo 2 / Jumpy (2007-2016)','Expert II'),opt('ex3','Expert 3 (2016+)','Expert 3'),opt('p806','806','806'),opt('p807','807','807'),opt('p107','107 / C1 / Aygo','AYGO')])]
+    if (ans.pm === 'p207') {
+      if (!ans.p207sh) q = [ask('p207sh','Форма фишки датчика на рейке:',[opt('o','Овальная (обычно ранние годы)','207 (овал)'),opt('r','Круглая (более поздние годы)','207 (круг)')])]
+      else c = [{code: ans.p207sh === 'r' ? '207 (круг)' : '207 (овал)'}]
+    }
+    else if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/408/Partner B9/C4',null),opt('p207','207 / C3 Picasso ЭУР',null),opt('pm59','Partner M59 / Xsara Picasso','XSP'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508'),opt('bx','Boxer / Jumper / Ducato','Boxer'),opt('exii','Expert II / Scudo 2 / Jumpy (2007-2016)','Expert II'),opt('ex3','Expert 3 (2016+)','Expert 3'),opt('p806','806','806'),opt('p807','807','807'),opt('p107','107 / C1 / Aygo','AYGO')])]
     else if (ans.pm === 'p3') {
       if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+'),opt('d','Не знаю',null)])]
       else { const code = ans.esp==='y'?'FR3-':ans.esp==='n'?'FR3+':null; c = code ? [{code}] : [{code:'FR3-'},{code:'FR3+'}] }
@@ -901,17 +908,21 @@ function getRC(info, ans) {
       if (!ans.p4s) q = [ask('p4s','Датчик 407:',[opt('y','Есть датчик','407-D'),opt('n','Без датчика','407')])]
       else c = [{code: ans.p4s === 'y' ? '407-D' : '407'}]
     } else {
-      const m = {p207:{code:'207'},pm59:{code:'XSP'},p406:{code:'406'},p607:{code:'607'},p508:{code:'508'},bx:{code:'Boxer'},exii:{code:'Expert II'},ex3:{code:'Expert 3'},p806:{code:'806', label:'Цену уточнить у менеджера'},p807:{code:'807', label:'Цену уточнить у менеджера'},p107:{code:'AYGO'}}
+      const m = {pm59:{code:'XSP'},p406:{code:'406'},p607:{code:'607'},p508:{code:'508'},bx:{code:'Boxer'},exii:{code:'Expert II'},ex3:{code:'Expert 3'},p806:{code:'806', label:'Цену уточнить у менеджера'},p807:{code:'807', label:'Цену уточнить у менеджера'},p107:{code:'AYGO'}}
       c = [m[ans.pm]].filter(Boolean)
     }
 
   } else if (br === 'Citroën') {
-    if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика (2002-2009)','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009-2016)','207'),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
+    if (ans.cm === 'ds3') {
+      if (!ans.ds3sh) q = [ask('ds3sh','Форма фишки датчика на рейке:',[opt('o','Овальная (обычно ранние годы)','207 (овал)'),opt('r','Круглая (более поздние годы)','207 (круг)')])]
+      else c = [{code: ans.ds3sh === 'r' ? '207 (круг)' : '207 (овал)'}]
+    }
+    else if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика (2002-2009)','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009-2016)',null),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
     else if (ans.cm === 'c4') {
       if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+')])]
       else c = [{code: ans.esp === 'y' ? 'FR3-' : 'FR3+'}]
     } else {
-      const m = {xsp:'XSP',c23:'C2/C3',ds3:'207',c5:'С5',c5x:'С5 X7',jm:'Boxer',jyii:'Expert II',jy3:'Expert 3',c3a:'C3 Aircross',c1:'AYGO'}
+      const m = {xsp:'XSP',c23:'C2/C3',c5:'С5',c5x:'С5 X7',jm:'Boxer',jyii:'Expert II',jy3:'Expert 3',c3a:'C3 Aircross',c1:'AYGO'}
       c = [{code: m[ans.cm]}]
       if (ans.cm === 'c3a') c[0].label = 'Наличие и цену уточнить у менеджера'
     }
@@ -1124,7 +1135,7 @@ function renderCat() {
     {g:'Mercedes', i:['W168','W169','W246','W203','W203-D','W204','W204+D','W204 ЭУР','W205','W210','W210+D','W211+D','W211-D','W212','W212 4x4','W220','W163','W164+D','W164-D','W167','W639 4х2','W639 4х4','SPR']},
     {g:'Volvo', i:['XC70','V70','Volvo S40','Volvo V40 II']},
     {g:'Ford', i:['FF','FF1','FFCM','FF3','FM3','FM4','Courier','Transit 3','Transit 4']},
-    {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207','407','407-D','406','607','508','Boxer','Expert II','Expert 3','AYGO']},
+    {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207 (овал)','207 (круг)','407','407-D','406','607','508','Boxer','Expert II','Expert 3','AYGO']},
     {g:'Renault', i:['SC','SC RX','SC2/Meg2','RL1','RL1+D','RL2','RL3','LG1','LG2','Kangoo','ESP 3','ESP4','Trafic','Master 3']},
     {g:'Opel / Chevrolet', i:['OA/OZ пл.','OA/OZ шт.','OVC','OVB','OAJ','Antara','AVEO']},
     {g:'Audi', i:['В5','B6/B7','B6/B7+D','А6С6','A4B8','Q7','A8D2']},
