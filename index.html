@@ -266,7 +266,7 @@ const TP = {
   'СК':{w:'ЭУР 2-я ген. Golf 5, Octavia A5 до 2009, Touran 1, Jetta 5.',cl:'Octavia 2012+ → уже 3Т!',say:'Есть СК. Уточни год.'},
   '3Т':{w:'ЭУР 3-я ген. Golf 5-6, Octavia с 2009, Yeti, Touran 2.',cl:'До 2009 Octavia = СК, с 2009 = 3Т.',say:'Есть 3Т.'},
   'БК':{w:'ZF белая крышка. Passat B6-B7, Tiguan 1 с 2011, CC, Sharan 2.',cl:'Tiguan до 2011 → 3Т. Sharan 1 → Sh+.',say:'Есть БК.'},
-  'КР':{w:'MQB. Golf 7/8, Octavia A7/A8 (2013+), Tiguan 2, Jetta 6, Superb 3.',cl:'Superb 3 = КР, не В8!',say:'Есть КР.'},
+  'КР':{w:'MQB. Golf 7/8, Octavia A7/A8 (2013+), Jetta 6, Superb 3.',cl:'Superb 3 = КР, не В8. А Tiguan 2 наоборот — В8, не КР!',say:'Есть КР.'},
   'В8':{w:'Passat B8 (2015+), Superb 3 B8, Tiguan 2 (2016+). Артикул 5Q0.',cl:'Passat B7 — там БК.',say:'Есть В8.'},
   'N16':{w:'Nissan Almera N16 (2000-2006) / Almera Classic (2006-2013).',cl:'Часто под заказ.',say:'Есть N16.'},
   'G4':{w:'Golf 4 / Bora / Octavia A4 — ГУР.',cl:'Golf 5 уже ЭУР = СК/3Т.',say:'Есть G4. ГУР.'},
@@ -303,7 +303,7 @@ const TP = {
   '407':{w:'Peugeot 407 (2004-2011) без датчика.',cl:'С датчиком = 407+D.',say:'Есть 407.'},
   '407+D':{w:'Peugeot 407 (2004-2011) с датчиком.',cl:'Без датчика = 407.',say:'Есть 407+D.'},
   'XSP':{w:'Xsara Picasso / Partner M59 / Berlingo M59 (1999-2010), с цилиндром.',cl:'Partner B9 (после 2008) — уже FR3.',say:'Есть XSP.'},
-  'OA/OZ пл.':{w:'Opel Astra G/H / Zafira (2004-2012). Белый бачок = ZF = планка.',cl:'Белый → ZF → планка. Зелёный → TRW → штуцера.',say:'Есть OA/OZ планка.'},
+  'OA/OZ пл.':{w:'Opel Astra H / Zafira B (2004-2012) по таблице. Белый бачок = ZF = планка.',cl:'Белый → ZF → планка. Зелёный → TRW → штуцера. На Astra G / Zafira A планка в таблице не указана — уточни у менеджера.',say:'Есть OA/OZ планка.'},
   'OA/OZ шт.':{w:'Opel Astra G/H / Zafira (1998-2012). Зелёный бачок = TRW = штуцера.',cl:'Зелёный → штуцера.',say:'Есть OA/OZ штуцера.'},
   'OAJ':{w:'Opel Astra J / Insignia (2009+) ЭУР.',cl:'Нужна адаптация ЭБУ!',say:'Есть OAJ. Нужна адаптация.'},
   'B6/B7':{w:'Audi A4 B6/B7 без датчика. ТОЛЬКО KOYO!',cl:'С датчиком = B6/B7+D.',say:'Есть B6/B7. Только KOYO.'},
@@ -385,7 +385,8 @@ async function loadSheets() {
     STOCK_FULL = {}; STOCK_BASE = {}; let cnt = 0
     for (const row of rows) {
       const name = (row[0] || '').trim()
-      if (!name || !name.match(/рейк/i)) continue
+      // берём только строки-рейки: у насосов и блоков ЭУР в описании тоже встречается «рейке»
+      if (!name || !/^["“«\s]*рулев/i.test(name)) continue
       // убираем префикс "Рулевая рейка" (с возможной лишней кавычкой), чтобы не поймать его в кавычки
       const clean = name.replace(/^["“«\s]*рулев\S*\s+рейка\s*/i, '')
       const qm = clean.match(/["“«]([^"”»]{1,25})["”»]/)
@@ -396,6 +397,11 @@ async function loadSheets() {
       const after = clean.slice(qm.index + qm[0].length)
       const sm = after.match(/^\s*([+\-]\s?D|[+\-]|ШТ\.?|ПЛ\.?)/i)
       if (sm) raw += sm[1].replace(/\s/g,'')
+      // E90: в таблице ЭУР / гидравлика / 4х4 подписаны одной и той же кавычкой — различаем по тексту строки
+      if (normCode(qm[1].trim()) === 'E90') {
+        const has4 = /4\s?[хx]\s?4/i.test(clean), hasD = /\+\s?D/i.test(after)
+        raw = has4 ? (hasD ? 'E90+D 4х4' : 'E90 4х4') : (/ЭУР/i.test(clean) ? 'E90 ЭУР' : 'E90')
+      }
       const st = parseInt(row[1]) || 0
       const kf = normCode(raw), kb = baseCode(raw)
       if (kf) STOCK_FULL[kf] = (STOCK_FULL[kf] || 0) + st
