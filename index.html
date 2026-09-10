@@ -277,7 +277,7 @@ const PR = {
 const TP = {
   'СК':{w:'ЭУР 2-я ген. Golf 5, Octavia A5 до 2009, Touran 1, Jetta 5.',cl:'Octavia 2012+ → уже 3Т!',say:'Есть СК. Уточни год.'},
   '3Т':{w:'ЭУР 3-я ген. Golf 5-6, Octavia с 2009, Yeti, Touran 2.',cl:'До 2009 Octavia = СК, с 2009 = 3Т.',say:'Есть 3Т.'},
-  'БК':{w:'ZF белая крышка. Passat B6-B7, Tiguan 1 с 2011, CC, Sharan 2.',cl:'Tiguan до 2011 → 3Т. Sharan 1 → Sh+.',say:'Есть БК.'},
+  'БК':{w:'ZF белая крышка. Passat B6-B7, Tiguan 1 с 2011, CC, Sharan 2, Audi Q3 I (2011-2018).',cl:'Tiguan до 2011 → 3Т. Sharan 1 → Sh+.',say:'Есть БК.'},
   'КР':{w:'MQB. Golf 7/8, Octavia A7/A8 (2013+), Jetta 6, Superb 3.',cl:'Superb 3 = КР, не В8. А Tiguan 2 наоборот — В8, не КР!',say:'Есть КР.'},
   'В8':{w:'Passat B8 (2015+), Superb 3 B8, Tiguan 2 (2016+). Артикул 5Q0.',cl:'Passat B7 — там БК.',say:'Есть В8.'},
   'N16':{w:'Nissan Almera N16 (2000-2006) / Almera Classic (2006-2013).',cl:'Часто под заказ.',say:'Есть N16.'},
@@ -589,12 +589,15 @@ const MODELS = {
     {l:'Toledo 2 (до 2005)', code:'G4'}
   ],
   'Audi': [
-    {l:'A4 B5 / A6 C5 (до 2005)', pre:{am:'b5'}},
+    {l:'A4 B5 (1994-2005)', pre:{am:'b5'}},
+    {l:'A6 C5 (1997-2005)', pre:{am:'a6c5'}},
     {l:'A4 B6 / B7 (2000-2008)', pre:{am:'b67'}},
     {l:'A4 B8 / A5 / Q5', pre:{am:'b8'}},
     {l:'A6 C6 (2004-2011)', pre:{am:'c6'}},
     {l:'Q7 (= Touareg 1 / Cayenne 1)', pre:{_q7:true}},
-    {l:'A3 / TT / Q3', pre:{am:'a3'}}
+    {l:'A3 / TT', pre:{am:'a3'}},
+    {l:'Q3 I (2011-2018)', pre:{am:'q3', q3g:'1'}},
+    {l:'Q3 II (2018+)', pre:{am:'q3', q3g:'2'}}
   ],
   'BMW': [
     {l:'E36 / E46 (3 серия)', pre:{bm:'e46'}},
@@ -894,7 +897,22 @@ function getRC(info, ans) {
     } else c = [{code:'G3'}]
 
   } else if (br === 'Audi') {
-    if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 (1994-2005)','В5'),opt('a6c5','A6 C5 (1997-2005)',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT / Q3 (ЭУР)',null),opt('a8','A8 D2 (1994-2002)','A8D2')])]
+    // Audi Q3 по VIN: позиции 7-8 — код модели. 8U = Q3 I (база Tiguan 1), F3 = Q3 II (MQB)
+    if (!ans.am && info.vin && info.vin.length === 17) {
+      const a78 = info.vin.substring(6,8).toUpperCase()
+      if (a78 === '8U') { ans.am = 'q3'; ans.q3g = '1' }
+      else if (a78 === 'F3') { ans.am = 'q3'; ans.q3g = '2' }
+    }
+    if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 (1994-2005)','В5'),opt('a6c5','A6 C5 (1997-2005)',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT (ЭУР)',null),opt('q3','Q3',null),opt('a8','A8 D2 (1994-2002)','A8D2')])]
+    else if (ans.am === 'q3') {
+      // Q3 I (2011-2018) — платформа Tiguan 1, рейка БК (номер ЭУР 5N1). Q3 II (2018+) — MQB, КР.
+      // 2018 — год смены поколений, по году не понять, поэтому спрашиваем кузов
+      if (!ans.q3g && info.year && info.year <= 2017) ans.q3g = '1'
+      if (!ans.q3g && info.year && info.year >= 2019) ans.q3g = '2'
+      if (!ans.q3g) q = [ask('q3g','Какой Q3? (в 2018 году сменилось поколение)',[opt('1','Q3 I — старый кузов (2011-2018)','БК'),opt('2','Q3 II — новый кузов (2018+)','КР')])]
+      else if (ans.q3g === '1') c = [{code:'БК', label:'Audi Q3 I = база Tiguan 1. Сверь: белая крышка на моторе, 4 точки крепления, номер ЭУР на 5N1'}]
+      else c = [{code:'КР', label:'Audi Q3 II — платформа MQB'}]
+    }
     else if (ans.am === 'b67') {
       if (!ans.bs) q = [ask('bs','Датчик A4 B6/B7:',[opt('y','Есть датчик','B6/B7+D'),opt('n','Без датчика','B6/B7')])]
       else c = [{code: ans.bs === 'y' ? 'B6/B7+D' : 'B6/B7', label:'ТОЛЬКО KOYO!'}]
