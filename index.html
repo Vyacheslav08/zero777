@@ -346,7 +346,7 @@ const TP = {
   'Jaguar X-type+D':{w:'Jaguar X-type с датчиком.',cl:'Без датчика = Jaguar X-type.',say:'Есть X-type с датчиком.'},
   '208':{w:'Peugeot 208 / Citroen C-Elysee (2012-2019).',cl:'Не путать с 207 — там ЭУР и другая фишка датчика.',say:'Есть 208.'},
   'C3':{w:'Citroen C3 ЭУР (2009-2016) — электроусилитель.',cl:'Гидравлика C2/C3 (2002-2009) — это другая рейка, код C2/C3.',say:'Есть C3 ЭУР.'},
-  'FR':{w:'Citroen C4 Picasso / Peugeot 308 / Peugeot 3008 (2014+) — ЭУР, электро.',cl:'До 2011 это FR3+ / FR3- (гидравлика) — не путать.',say:'Есть FR (электро).'},
+  'FR':{w:'Citroen C4 Picasso / Peugeot 308 / Peugeot 3008 (2014+) — ЭУР, электро. Номер по каталогу 6820000276.',cl:'До 2011 это FR3+ / FR3- (гидравлика) — не путать. Если у клиента есть трубки и бачок ГУР — это НЕ FR.',say:'Есть FR, электро. Номер 6820000276.'},
   'СК GEN-1':{w:'ЭУР 1-я генерация (2003-2005): VW Touran, Caddy, Golf, Audi A3.',cl:'С 2004-2007 идёт уже СК (2-я генерация). На стыке годов уточняй маркировку ЭУР у клиента.',say:'Есть СК первой генерации.'},
   'SH дорест':{w:'VW Sharan 1 ДОрестайлинг (до 2003).',cl:'Рестайлинг с 2003 — это Sh+, другая рейка.',say:'Есть Sharan 1 дорестайлинг.'},
   'OVC':{w:'Opel Vectra C (2002-2008) без датчика.',cl:'В таблице отдельно лежат рейки под насос НА РЕЙКЕ и под насос ПОД КРЫЛОМ — спроси клиента, где у него стоит насос, и уточни у менеджера, какая именно на складе. С датчиком = OVC+D.',say:'Есть Vectra C без датчика. Уточню, где у вас насос — на рейке или под крылом.'},
@@ -1061,9 +1061,13 @@ function getRC(info, ans) {
       if (!ans.p207sh) q = [ask('p207sh','Форма фишки датчика на рейке:',[opt('o','Овальная (обычно ранние годы)','207 (овал)'),opt('r','Круглая (более поздние годы)','207 (круг)')])]
       else c = [{code: ans.p207sh === 'r' ? '207 (круг)' : '207 (овал)'}]
     }
-    else if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/408/Partner B9/C4',null),opt('p207','207 / C3 Picasso ЭУР',null),opt('pm59','Partner M59 / Xsara Picasso','XSP'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508'),opt('bx','Boxer / Jumper / Ducato','Boxer'),opt('exii','Expert II / Scudo 2 / Jumpy (2007-2016)','Expert II'),opt('ex3','Expert 3 (2016+)','Expert 3'),opt('p806','806','806'),opt('p807','807','807'),opt('p107','107 / C1 / Aygo','AYGO')])]
+    else if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/408/Partner B9/C4 (гидравлика)',null),opt('fr','308 / 3008 / C4 Picasso (2014+) — электро','FR'),opt('p207','207 / C3 Picasso ЭУР',null),opt('pm59','Partner M59 / Xsara Picasso','XSP'),opt('p406','406','406'),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508'),opt('bx','Boxer / Jumper / Ducato','Boxer'),opt('exii','Expert II / Scudo 2 / Jumpy (2007-2016)','Expert II'),opt('ex3','Expert 3 (2016+)','Expert 3'),opt('p806','806','806'),opt('p807','807','807'),opt('p107','107 / C1 / Aygo','AYGO')])]
+    else if (ans.pm === 'fr') c = [{code:'FR', label:'Электро. Номер по каталогу 6820000276'}]
     else if (ans.pm === 'p3') {
-      if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+'),opt('d','Не знаю',null)])]
+      // с 2012 на 308/3008/C4 Picasso пошёл электроусилитель — это уже FR, а не FR3
+      if (yr >= 2012 && !ans.frt) q = [ask('frt','Усилитель руля:',[opt('g','Гидравлика — есть трубки и бачок',null),opt('e','Электро — только провода','FR')])]
+      else if (ans.frt === 'e') c = [{code:'FR', label:'Электро. Номер по каталогу 6820000276'}]
+      else if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+'),opt('d','Не знаю',null)])]
       else { const code = ans.esp==='y'?'FR3-':ans.esp==='n'?'FR3+':null; c = code ? [{code}] : [{code:'FR3-'},{code:'FR3+'}] }
     } else if (ans.pm === 'p407') {
       if (!ans.p4s) q = [ask('p4s','Датчик 407 (2004-2011):',[opt('y','Есть датчик','407+D'),opt('n','Без датчика','407')])]
@@ -1079,9 +1083,13 @@ function getRC(info, ans) {
       if (!ans.ds3sh) q = [ask('ds3sh','Форма фишки датчика на рейке:',[opt('o','Овальная (обычно ранние годы)','207 (овал)'),opt('r','Круглая (более поздние годы)','207 (круг)')])]
       else c = [{code: ans.ds3sh === 'r' ? '207 (круг)' : '207 (овал)'}]
     }
-    else if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008)',null),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика (2002-2009)','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009-2016)',null),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
+    else if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008, гидравлика)',null),opt('frc','C4 Picasso / 308 / 3008 (2014+) — электро','FR'),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика (2002-2009)','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009-2016)',null),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
+    else if (ans.cm === 'frc') c = [{code:'FR', label:'Электро. Номер по каталогу 6820000276'}]
     else if (ans.cm === 'c4') {
-      if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+')])]
+      // с 2012 на C4 Picasso пошёл электроусилитель — это уже FR, а не FR3
+      if (yr >= 2012 && !ans.frt) q = [ask('frt','Усилитель руля:',[opt('g','Гидравлика — есть трубки и бачок',null),opt('e','Электро — только провода','FR')])]
+      else if (ans.frt === 'e') c = [{code:'FR', label:'Электро. Номер по каталогу 6820000276'}]
+      else if (!ans.esp) q = [ask('esp','Есть ESP?',[opt('y','Да','FR3-'),opt('n','Нет','FR3+')])]
       else c = [{code: ans.esp === 'y' ? 'FR3-' : 'FR3+'}]
     } else {
       const m = {xsp:'XSP',c23:'C2/C3',c5:'С5',c5x:'С5 X7',jm:'Boxer',jyii:'Expert II',jy3:'Expert 3',c3a:'C3 Aircross',c1:'AYGO'}
