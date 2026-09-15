@@ -392,9 +392,19 @@ const YR = {
   L:2020,M:2021,N:2022,P:2023,R:2024,S:2025
 }
 
+// у Audi кузов зашит в позициях 7-8 VIN — по ним селлеру не надо гадать, какая это A4/A6
+// [что выбрать в мастере, как показать человеку]
+const AUDI78 = {
+  '8D':['b5','A4 B5'], '8E':['b67','A4 B6/B7'], '8H':['b67','A4 B6/B7 кабрио'],
+  '8K':['b8','A4 B8'], '8T':['b8','A5'], '8F':['b8','A5 кабрио'], '8R':['b8','Q5'],
+  '4B':['a6c5','A6 C5'], '4F':['c6','A6 C6'], '4L':['q7','Q7'], '4D':['a8','A8 D2'],
+  '8P':['a3','A3 8P'], '8V':['a3','A3 8V'], '8J':['a3','TT 8J'],
+  '8U':['q3','Q3 I'], 'F3':['q3','Q3 II']
+}
 function dv(v) {
   const brand = WMI[v.substring(0,3)] || WMI[v.substring(0,2)] || null
-  return { vin:v, brand, year: YR[v[9]] || null, known: !!brand }
+  const a = brand === 'Audi' && v.length === 17 ? AUDI78[v.substring(6,8).toUpperCase()] : null
+  return { vin:v, brand, year: YR[v[9]] || null, known: !!brand, acode: a ? a[0] : null, amodel: a ? a[1] : null }
 }
 
 // Google Sheets — наличие со склада
@@ -808,7 +818,7 @@ function upd() {
     const brand = mb || i.brand, year = myr || i.year
     btn.disabled = false
     h.innerHTML = brand
-      ? '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + brand + (year ? ' · ' + year + ' г.' : '') + (mb || myr ? ' (уточнено вручную)' : '') + '</span>'
+      ? '<span class="bok"><i class="ti ti-check" style="font-size:12px"></i>' + brand + (year ? ' · ' + year + ' г.' : '') + (i.amodel && !mb ? ' · ' + i.amodel : '') + (mb || myr ? ' (уточнено вручную)' : '') + '</span>'
       : '<span class="binf"><i class="ti ti-help" style="font-size:12px"></i>Марка не распознана — укажи марку в списке ниже</span>'
   } else if (mb) {
     btn.disabled = false
@@ -923,11 +933,12 @@ function getRC(info, ans) {
     } else c = [{code:'G3'}]
 
   } else if (br === 'Audi') {
-    // Audi Q3 по VIN: позиции 7-8 — код модели. 8U = Q3 I (база Tiguan 1), F3 = Q3 II (MQB)
-    if (!ans.am && info.vin && info.vin.length === 17) {
+    // кузов Audi по позициям 7-8 VIN — тогда селлеру не нужно угадывать модель руками
+    if (!ans.am && info.acode) {
+      ans.am = info.acode
       const a78 = info.vin.substring(6,8).toUpperCase()
-      if (a78 === '8U') { ans.am = 'q3'; ans.q3g = '1' }
-      else if (a78 === 'F3') { ans.am = 'q3'; ans.q3g = '2' }
+      if (a78 === '8U') ans.q3g = '1'
+      if (a78 === 'F3') ans.q3g = '2'
     }
     if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 (1994-2005)','В5'),opt('a6c5','A6 C5 (1997-2005)',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT (ЭУР)',null),opt('q3','Q3',null),opt('a8','A8 D2 (1994-2002)','A8D2')])]
     else if (ans.am === 'q3') {
