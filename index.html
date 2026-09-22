@@ -993,7 +993,10 @@ function getRC(info, ans) {
       else if (ans.e4l === 'ye') c = [{code:'Е46-'}]
       else c = [{code:'Е46+'}, {code:'Е46-'}]
     } else if (ans.bm === 'e90') {
-      if (!ans.e9t) q = [ask('e9t','Тип BMW:',[opt('g','E90/91/92/93 / E87 / X1 E84 — Гидравлика ГУР',null),opt('e','E90 ЭУР — Электроусилитель','E90 ЭУР'),opt('x3','X3 E83 (2003-2010)',null)])]
+      // X1 E84 бывает и с гидравликой, и с ЭУР — по VIN это не определить, спрашиваем у клиента
+      if (ans.e9t === 'x1' && ans.x1t) ans.e9t = ans.x1t
+      if (ans.e9t === 'x1') q = [ask('x1t','X1 E84 — какой усилитель руля?',[opt('g','Гидравлика — есть трубки и бачок',null),opt('e','Электро — только провода','E90 ЭУР')])]
+      else if (!ans.e9t) q = [ask('e9t','Тип BMW:',[opt('g','E90/91/92/93 / E87 / X1 E84 — Гидравлика ГУР',null),opt('e','E90 ЭУР — Электроусилитель','E90 ЭУР'),opt('x3','X3 E83 (2003-2010)',null)])]
       else if (ans.e9t === 'g') {
         if (!ans.e9p) q = [ask('e9p','Привод?',[opt('z','Задний привод (самый ходовой)','E90'),opt('p','Полный привод (xDrive / 4x4)',null)])]
         else if (ans.e9p === 'z') c = [{code:'E90'}]
@@ -1001,10 +1004,8 @@ function getRC(info, ans) {
         else c = [{code: ans.e9s === 'y' ? 'E90+D 4х4' : 'E90 4х4'}]
       }
       else if (ans.e9t === 'e') c = [{code:'E90 ЭУР'}]
-      else if (ans.e9t === 'x3') {
-        if (!ans.e83s) q = [ask('e83s','Сервотроник на X3 E83 (датчик на рейке)?',[opt('y','Есть датчик → X3 E83+D','X3 E83+D'),opt('n','Без датчика → X3 E83-D','X3 E83-D')])]
-        else c = [{code: ans.e83s === 'y' ? 'X3 E83+D' : 'X3 E83-D'}]
-      }
+      // версии X3 E83 с датчиком (сервотроником) мы больше не возим — осталась только без датчика
+      else if (ans.e9t === 'x3') c = [{code:'X3 E83-D', label:'Версии с сервотроником (датчиком) у нас больше нет'}]
     } else if (ans.bm === 'e60') {
       if (!ans.e6t) q = [ask('e6t','Какая рейка E60?',[opt('r','Задний привод',null),opt('4','Полный привод (xDrive)',null),opt('a','Активная — под 4-5 датчиков','E60 актив')])]
       else if (ans.e6t === 'a') c = [{code:'E60 актив'}]
@@ -1016,9 +1017,11 @@ function getRC(info, ans) {
       else c = [{code: ans.e39s === 'y' ? 'Е39+D' : 'Е39-D'}]
     }
     else if (ans.bm === 'fs') {
-      if (!ans.fm) q = [ask('fm','Кузов:',[opt('f21','1 серия F20/F21','F20/F21'),opt('f30','3 серия F30 (2012-2020)','F20/F30'),opt('f10','5 серия F10','F10'),opt('x3f','X3 F25 (2010-2017)','X3 F25'),opt('f01','7 серия F01/F02',null)])]
+      if (!ans.fm) q = [ask('fm','Кузов:',[opt('f21','1 серия F20/F21',null),opt('f30','3 серия F30 (2012-2020)','F20/F30'),opt('f10','5 серия F10','F10'),opt('x3f','X3 F25 (2010-2017)','X3 F25'),opt('f01','7 серия F01/F02',null)])]
       else if (ans.fm === 'f01') c = [{code:'F01', label:'BMW 7 F01 — наличие и цену уточнить у менеджера'}]
-      else { const m = {f21:{code:'F20/F21'},f30:{code:'F20/F30'},f10:{code:'F10'},x3f:{code:'X3 F25', label:'Часто под заказ — уточнить у менеджера'}}; c = [m[ans.fm]] }
+      // отдельной рейки на 1 серию у нас больше нет — честнее так и сказать, чем выдать снятый код
+      else if (ans.fm === 'f21') c = [{code:'⚠ нет', label:'Отдельной рейки на 1 серию F20/F21 у нас больше нет. Уточни у менеджера, подойдёт ли рейка от 3 серии F30.'}]
+      else { const m = {f30:{code:'F20/F30'},f10:{code:'F10'},x3f:{code:'X3 F25', label:'Часто под заказ — уточнить у менеджера'}}; c = [m[ans.fm]] }
     }
 
   } else if (br === 'Mercedes') {
@@ -1196,8 +1199,9 @@ function getRC(info, ans) {
     else c = [{code:'⚠ нет', label:'Из Porsche только Cayenne 1 (до 2010)'}]
 
   } else if (br === 'Fiat') {
-    if (!ans.fim) q = [ask('fim','Модель Fiat:',[opt('db','Doblo','DOBLO'),opt('dc','Ducato (= Boxer/Jumper)','Boxer'),opt('sc','Scudo (= Expert/Jumpy)','Expert')])]
-    else { const m = {db:'DOBLO',dc:'Boxer',sc:'Expert'}; const rd = dsplit(m[ans.fim]); if (rd) return rd; c = [{code:m[ans.fim]}] }
+    // Scudo раньше выдавал несуществующий код «Expert» — у нас он делится по поколениям
+    if (!ans.fim) q = [ask('fim','Модель Fiat:',[opt('db','Doblo','DOBLO'),opt('dc','Ducato (= Boxer/Jumper)','Boxer'),opt('sc2','Scudo 2 (2007-2016) = Expert II','Expert II'),opt('sc3','Scudo 3 (2016+) = Expert 3','Expert 3')])]
+    else { const m = {db:'DOBLO',dc:'Boxer',sc2:'Expert II',sc3:'Expert 3'}; const rd = dsplit(m[ans.fim]); if (rd) return rd; c = [{code:m[ans.fim]}] }
 
   } else if (br === 'Alfa Romeo') {
     c = [{code:'AR147', label:'Alfa Romeo 147/159/166'}]
