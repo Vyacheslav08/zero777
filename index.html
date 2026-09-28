@@ -213,7 +213,7 @@ const PR = {
   'В8':{d:53800,r:60000},'G4':{d:13500,r:17000},'В5':{d:14500,r:18000},'Sh+':{d:26000,r:30000},
   'Е46+':{d:15900,r:19000},'Е46-':{d:21200,r:25000},'Е46 4х4':{d:31000,r:36000},'E90':{d:24400,r:28000},'E90 ЭУР':{d:49000,r:56000},'E90+D 4х4':{d:44500,r:48000},'E90 4х4':{d:0,r:0,note:'Полный привод без датчика — бывает крайне редко, обычно под заказ'},
   'E60+D':{d:35500,r:'39000-40000'},'E60-D':{d:0,r:0,note:'Цену и наличие уточнить у менеджера'},
-  'E60 4x4+D':{d:29800,r:'34000-35000'},'E60 4x4-D':{d:0,r:0,note:'Цену и наличие уточнить у менеджера'},
+  'E60+D 4x4':{d:29800,r:'34000-35000'},'E60-D 4x4':{d:0,r:0,note:'Цену и наличие уточнить у менеджера'},
   'E60 актив':{d:0,r:0,note:'Активная рейка под 4-5 датчиков — уточнить у менеджера'},
   'F20/F30':{d:45200,r:'48000-49000'},'F10':{d:50500,r:'54000-55000'},
   'X3 E83-D':{d:29200,r:'32000-33000'},
@@ -275,6 +275,7 @@ const PR = {
   'Jaguar S-type/XF':{d:19200,r:'22000-23000'},'Jaguar X-type':{d:19200,r:'22000-23000'},'Jaguar X-type+D':{d:21200,r:'24000-25000'},
   'Geely X-7':{d:13200,r:'16000-17000'},
   // добавлено по таблице — этих позиций на сайте раньше не было
+  'FF мех':{d:12100,r:'14500-15000'},'M35+D':{d:13600,r:'16000-17000'},'X5 E70':{d:26000,r:'29000-30000'},
   '208':{d:20500,r:'24000-25000'},'C3':{d:18500,r:'21000-22000'},'FR':{d:40000,r:'46000-47000'},
   'СК GEN-1':{d:20000,r:'23000-24000'},'SH дорест':{d:21200,r:'24000-25000'}
 }
@@ -283,15 +284,15 @@ const TP = {
   'СК':{w:'ЭУР 2-я ген. Golf 5, Octavia A5 до 2009, Touran 1, Jetta 5.',cl:'Octavia 2012+ → уже 3Т!',say:'Есть СК. Уточни год.'},
   '3Т':{w:'ЭУР 3-я ген. Golf 5-6, Octavia с 2009, Yeti, Touran 2.',cl:'До 2009 Octavia = СК, с 2009 = 3Т.',say:'Есть 3Т.'},
   'БК':{w:'ZF белая крышка. Passat B6-B7, Tiguan 1 с 2011, CC, Sharan 2, Audi Q3 I (2011-2018).',cl:'Tiguan до 2011 → 3Т. Sharan 1 → Sh+.',say:'Есть БК.'},
-  'КР':{w:'MQB. Golf 7/8, Octavia A7/A8 (2013+), Jetta 6, Superb 3.',cl:'Superb 3 = КР, не В8. А Tiguan 2 наоборот — В8, не КР!',say:'Есть КР.'},
+  'КР':{w:'MQB. Octavia A7, Golf 7, Jetta 6 (2013-2019), Superb 3.',cl:'В таблице КР подписана 2013-2019 — на Golf 8 / Octavia A8 (с 2020) уточни у менеджера. Superb 3 = КР, не В8. А Tiguan 2 — В8, не КР!',say:'Есть КР.'},
   'В8':{w:'Passat B8 (2015+), Superb 3 B8, Tiguan 2 (2016+). Артикул 5Q0.',cl:'Passat B7 — там БК.',say:'Есть В8.'},
   'N16':{w:'Nissan Almera N16 (2000-2006) / Almera Classic (2006-2013).',cl:'Часто под заказ.',say:'Есть N16.'},
-  'G4':{w:'Golf 4 / Bora / Octavia A4 — ГУР.',cl:'Golf 5 уже ЭУР = СК/3Т.',say:'Есть G4. ГУР.'},
+  'G4':{w:'Golf 4 / Bora / Octavia A4 Tour / Seat Toledo / Audi TT 8N — ГУР.',cl:'Golf 5 уже ЭУР = СК/3Т.',say:'Есть G4. ГУР.'},
   'В5':{w:'Audi A4 B5 (1996-2005) / VW Passat B5 — гидравлика.',cl:'A4 B6 — другая (KOYO).',say:'Есть В5. ГУР.'},
   'Sh+':{w:'Sharan 1 рестайлинг (с 2003) / Alhambra 1 — ГУР.',cl:'Sharan 2 → БК.',say:'Есть Sh+.'},
   'Е46+':{w:'BMW E46 ДЛИННАЯ, 3.5 оборота. Бывает ZF и TRW. У ZF шильдик серый/синий/чёрный, у TRW шильдика нет.',cl:'Длинная или короткая? У TRW шильдиков нет — смотреть длину/обороты.',say:'Есть Е46+ (длинная).'},
   'Е46-':{w:'BMW E46 КОРОТКАЯ, 3 оборота. Бывает ZF и TRW. У ZF шильдик жёлтый/фиолетовый, у TRW шильдика нет.',cl:'Длинная или короткая? У TRW шильдиков нет — смотреть длину/обороты.',say:'Есть Е46- (короткая).'},
-  'Е46 4х4':{w:'BMW E46/E36 полный привод (xi / 4x4). Отдельная рейка.',cl:'На полный привод только эта рейка, задняя НЕ подходит!',say:'Есть Е46 на полный привод.'},
+  'Е46 4х4':{w:'BMW E46/E36 полный привод (xi / 4x4). Отдельная рейка, серый шильдик.',cl:'На полный привод только эта рейка, задняя НЕ подходит!',say:'Есть Е46 на полный привод.'},
   'E90':{w:'BMW E90/91/92/93, E87, X1 E84, Z4 E89. Гидравлика, ЗАДНИЙ привод. Самый ходовой. ZF и TRW оба встречаются.',cl:'ZF и TRW НЕ взаимозаменяемы! Уточни у клиента (по VIN ненадёжно).',say:'Есть E90. Спроси: ZF или TRW?'},
   'E90 ЭУР':{w:'BMW E90/91/92/93, E87, X1 E84, Z4 E89 с электроусилителем. Единственный вид ЭУР-рейки на эти кузова.',cl:'Гидро E90 ≠ ЭУР E90.',say:'Есть E90 ЭУР.'},
   'E90+D 4х4':{w:'BMW E90/E87/X1 E84 полный привод (xDrive), гидравлика, с целым датчиком. Бывает изредка.',cl:'Полный привод ≠ задний! Датчик должен быть целый.',say:'Есть E90 на полный привод с датчиком.'},
@@ -305,8 +306,8 @@ const TP = {
   'W212-D':{w:'Mercedes E W212 (2009-2016) задний привод, без датчика.',cl:'С датчиком = W212+D. W212 4Matic — под заказ 7-14 дней!',say:'Есть W212-D.'},
   'W212 4x4':{w:'Mercedes E W212 4Matic — под заказ.',cl:'Закуп ~85к, 7-14 дней.',say:'W212 4Matic под заказ 7-14 дней.'},
   'W211+D':{w:'Mercedes E W211 / CLS W219 (2002-2009) с датчиком угла поворота. W219 = W211!',cl:'Без датчика = W211-D.',say:'Есть W211+D.'},
-  '207 (овал)':{w:'Peugeot 207 / Citroen C3 Picasso ЭУР — фишка датчика ОВАЛЬНАЯ (обычно ранние годы).',cl:'Форма разъёма не совпадает с круглой версией — не перепутай.',say:'Есть 207 под овальную фишку.'},
-  '207 (круг)':{w:'Peugeot 207 / Citroen C3 Picasso ЭУР — фишка датчика КРУГЛАЯ (более поздние годы).',cl:'Форма разъёма не совпадает с овальной версией — не перепутай.',say:'Есть 207 под круглую фишку.'},
+  '207 (овал)':{w:'Peugeot 207 / Citroen C3 Picasso ЭУР — фишка датчика ОВАЛЬНАЯ (2002-2009).',cl:'Форма разъёма не совпадает с круглой версией — не перепутай.',say:'Есть 207 под овальную фишку.'},
+  '207 (круг)':{w:'Peugeot 207 / Citroen C3 Picasso ЭУР — фишка датчика КРУГЛАЯ (2009-2014).',cl:'Форма разъёма не совпадает с овальной версией — не перепутай.',say:'Есть 207 под круглую фишку.'},
   'W211-D':{w:'Mercedes E W211 / CLS W219 (2002-2009) без датчика. W219 = W211!',cl:'С датчиком = W211+D.',say:'Есть W211-D.'},
   'W164+D':{w:'ML W164 / R W251 (2005-2012) с датчиком угла поворота — только ГУР.',cl:'W164 ЭУР не продаём. Без датчика = W164-D.',say:'Есть W164+D. ГУР.'},
   'W164-D':{w:'ML W164 / R W251 (2005-2012) без датчика — только ГУР.',cl:'W164 ЭУР не продаём. С датчиком = W164+D.',say:'Есть W164-D. ГУР.'},
@@ -316,8 +317,8 @@ const TP = {
   'V70+D пл':{w:'Volvo V70/XC90 / S60-S80 до 2007, С датчиком, крепление ПЛАНКА.',cl:'Штуцера и планка не взаимозаменяемы! Схема по VIN пробивается только на autoostrov.by.',say:'Есть V70 с датчиком, под планку.'},
   'V70-D шт':{w:'Volvo V70/XC90 / S60-S80 до 2007, БЕЗ датчика, крепление ШТУЦЕРА.',cl:'Штуцера и планка не взаимозаменяемы! Схема по VIN пробивается только на autoostrov.by.',say:'Есть V70 без датчика, под штуцера.'},
   'V70-D пл':{w:'Volvo V70/XC90 / S60-S80 до 2007, БЕЗ датчика, крепление ПЛАНКА.',cl:'Штуцера и планка не взаимозаменяемы! Схема по VIN пробивается только на autoostrov.by.',say:'Есть V70 без датчика, под планку.'},
-  'FFCM':{w:'Ford Focus 2 ГИДРО / C-Max до 2011 / Volvo V50.',cl:'Focus 3 ЭУР = FF3, не FFCM!',say:'Есть FFCM. Focus 2 гидро.'},
-  'FF3':{w:'Ford Focus 3 ЭУР / Kuga 2 / C-Max 2012+.',cl:'Гидро Focus 2 = FFCM.',say:'Есть FF3. ЭУР версия.'},
+  'FFCM':{w:'Ford Focus 2 ГИДРО / C-Max (2005-2008) / Volvo V50.',cl:'Focus 3 ЭУР = FF3, не FFCM!',say:'Есть FFCM. Focus 2 гидро.'},
+  'FF3':{w:'Ford Focus 3 ЭУР / Kuga 2 / C-Max / Tourneo Connect (2012-2016).',cl:'Гидро Focus 2 = FFCM.',say:'Есть FF3. ЭУР версия.'},
   'FM4':{w:'Mondeo 4 / S-Max / Galaxy — одна рейка.',cl:'Mondeo 4 = S-Max = Galaxy.',say:'Есть FM4.'},
   'FR3+':{w:'Peugeot/C4 (до 2011) БЕЗ ESP. 3+ оборота.',cl:'Определяется ТОЛЬКО по ESP!',say:'FR3+. Нет ESP.'},
   'FR3-':{w:'Peugeot/C4 (до 2011) С ESP. 3- оборота.',cl:'ESP есть = FR3- всегда.',say:'FR3-. Есть ESP.'},
@@ -332,13 +333,13 @@ const TP = {
   'Q7-D':{w:'Audi Q7 I (весь выпуск) / Touareg 1 / Cayenne 1 (до 2010) БЕЗ датчика — одна рейка!',cl:'На Q7 I рейка одна на все годы. Touareg 2 (2010+) ≠ Q7! Amarok — НЕ подтверждён, уточни у менеджера. С датчиком = Q7+D.',say:'Есть Q7 без датчика. Touareg 1 и Cayenne 1 подходят.'},
   'Q7+D':{w:'Audi Q7 I (весь выпуск) / Touareg 1 / Cayenne 1 (до 2010) С датчиком — одна рейка!',cl:'На Q7 I рейка одна на все годы. Touareg 2 (2010+) ≠ Q7! Amarok — НЕ подтверждён, уточни у менеджера. Без датчика = Q7-D.',say:'Есть Q7 с датчиком. Touareg 1 и Cayenne 1 подходят.'},
   'V4':{w:'Chrysler Voyager / Dodge Caravan 4 поколение (2001-2008). ГУР.',cl:'Границa поколений 2007-2008 — уточни год по СТС.',say:'Есть V4.'},
-  'V5':{w:'Chrysler Voyager / Dodge Caravan 5 поколение (2008+). ГУР.',cl:'Граница поколений 2007-2008 — уточни год по СТС.',say:'Есть V5.'},
+  'V5':{w:'Chrysler Voyager / Dodge Caravan 5 поколение (2008-2011). ГУР.',cl:'Граница поколений 2007-2008 — уточни год по СТС.',say:'Есть V5.'},
   'PT+D':{w:'Chrysler PT Cruiser (2000-2010) с датчиком.',cl:'Без датчика = PT-D.',say:'Есть PT+D.'},
   'PT-D':{w:'Chrysler PT Cruiser (2000-2010) без датчика.',cl:'С датчиком = PT+D.',say:'Есть PT-D.'},
   'А6С5':{w:'Audi A6 C5 (1997-2005) БЕЗ датчика/сервопривода. Отдельная рейка — НЕ В5!',cl:'В5 — это Passat B5 и Audi A4 B5, на A6 C5 она не идёт. С датчиком = А6С5+D.',say:'Есть А6С5 без датчика.'},
   'А6С5+D':{w:'Audi A6 C5 (1997-2005) С датчиком/сервоприводом. Отдельная рейка — НЕ В5!',cl:'В5 — это Passat B5 и Audi A4 B5, на A6 C5 она не идёт. Без датчика = А6С5.',say:'Есть А6С5 с датчиком.'},
-  'А6С6+D':{w:'Audi A6 C6 (2004-2008) с датчиком.',cl:'Без датчика = А6С6-D (заметно дешевле).',say:'Есть А6С6+D.'},
-  'А6С6-D':{w:'Audi A6 C6 (2004-2008) без датчика.',cl:'С датчиком = А6С6+D.',say:'Есть А6С6-D.'},
+  'А6С6+D':{w:'Audi A6 C6 (2004-2008) с датчиком.',cl:'В таблице 2004-2008 — на рестайлинг 2009-2011 уточни у менеджера. Без датчика = А6С6-D (заметно дешевле).',say:'Есть А6С6+D.'},
+  'А6С6-D':{w:'Audi A6 C6 (2004-2008) без датчика.',cl:'В таблице 2004-2008 — на рестайлинг 2009-2011 уточни у менеджера. С датчиком = А6С6+D.',say:'Есть А6С6-D.'},
   'A4B8+D':{w:'Audi A4 B8 / A5 / Q5 с датчиком.',cl:'Без датчика = A4B8-D.',say:'Есть A4B8+D.'},
   'A4B8-D':{w:'Audi A4 B8 / A5 / Q5 без датчика.',cl:'С датчиком = A4B8+D.',say:'Есть A4B8-D.'},
   'W210-D':{w:'Mercedes E W210 (1995-2003) задний привод, без датчика.',cl:'С датчиком = W210+D.',say:'Есть W210-D.'},
@@ -354,14 +355,22 @@ const TP = {
   'C3':{w:'Citroen C3 ЭУР (2009-2016) — электроусилитель.',cl:'Гидравлика C2/C3 (2002-2009) — это другая рейка, код C2/C3.',say:'Есть C3 ЭУР.'},
   'FR':{w:'Citroen C4 Picasso / Peugeot 308 / Peugeot 3008 (2014+) — ЭУР, электро. Номер по каталогу 6820000276.',cl:'До 2011 это FR3+ / FR3- (гидравлика) — не путать. Если у клиента есть трубки и бачок ГУР — это НЕ FR.',say:'Есть FR, электро. Номер 6820000276.'},
   'СК GEN-1':{w:'ЭУР 1-я генерация (2003-2005): VW Touran, Caddy, Golf, Audi A3.',cl:'С 2004-2007 идёт уже СК (2-я генерация). На стыке годов уточняй маркировку ЭУР у клиента.',say:'Есть СК первой генерации.'},
+  'LG1':{w:'Renault Logan 1 / Sandero 1 (2004-2015), крепление ШТУЦЕРА.',cl:'В 2014-2015 выпускались и Logan 1, и Logan 2 — смотри крепление трубок: штуцера → LG1, планка → LG2.',say:'Есть LG1 на Logan 1.'},
+  'LG2':{w:'Renault Logan 2 (с 2014), крепление ПЛАНКА.',cl:'В 2014-2015 выпускались и Logan 1, и Logan 2 — смотри крепление трубок: планка → LG2, штуцера → LG1.',say:'Есть LG2 на Logan 2.'},
+  'FF':{w:'Ford Fiesta / Fusion, Mazda 2 (2005-2010) — рейка под гидроусилитель.',cl:'Есть отдельная механическая рейка без усилителя — FF мех. Уточни, есть ли у клиента ГУР.',say:'Есть FF.'},
+  'FF мех':{w:'Ford Fiesta / Fusion / Mazda 2 — механическая рейка БЕЗ усилителя («сухая»).',cl:'Только для машин без гидроусилителя! На машину с ГУР не встанет.',say:'Есть механическая FF, без усилителя.'},
+  'M35':{w:'Mazda 3 BK (2002-2009) без датчика.',cl:'Mazda 3 BL (2008-2011) — это другая рейка, M35 BL. С датчиком = M35+D.',say:'Есть M35.'},
+  'M35+D':{w:'Mazda 3 BK (2002-2009) с датчиком.',cl:'Без датчика = M35.',say:'Есть M35+D.'},
+  'Volvo S40':{w:'Volvo S40 II (с 2004).',cl:'На старый S40/V40 (до 2004) — не эта. V50 на сайте идёт на FFCM (база Focus 2) — если сомнения, уточни у менеджера.',say:'Есть рейка на Volvo S40 с 2004.'},
+  'X5 E70':{w:'BMW X5 E70 (2006-2013).',cl:'В таблице подписана «-D» (без датчика), но в описании «под датчик» — уточни у менеджера, с датчиком она или без.',say:'Есть рейка на X5 E70.'},
   'SH дорест':{w:'VW Sharan 1 ДОрестайлинг (до 2003).',cl:'Чем именно отличается от Sh+ — уточняется у менеджера. Пока для Sharan 1 бери Sh+.',say:'Уточню у менеджера, какая именно нужна.'},
   '406+D':{w:'Peugeot 406 (1995-2004) ПОД ДАТЧИК.',cl:'Без датчика смотри по креплению: 406шт. (штуцера) или 406пл. (планка).',say:'Есть 406 под датчик.'},
   '406шт.':{w:'Peugeot 406 (1995-2004), крепление ШТУЦЕРА.',cl:'Штуцера и планка не взаимозаменяемы — уточни у клиента, как подходят трубки.',say:'Есть 406 под штуцера.'},
   '406пл.':{w:'Peugeot 406 (1995-2004), крепление ПЛАНКА.',cl:'Штуцера и планка не взаимозаменяемы — уточни у клиента, как подходят трубки.',say:'Есть 406 под планку.'},
   'E60+D':{w:'BMW 5 E60/E61 (2003-2010) ЗАДНИЙ привод, с датчиком.',cl:'Бывает ещё полный привод (E60 4x4) и активная рейка под 4-5 датчиков — уточни у клиента.',say:'Есть E60 задний с датчиком.'},
   'E60-D':{w:'BMW 5 E60/E61 (2003-2010) ЗАДНИЙ привод, без датчика.',cl:'В таблице этой версии нет — цену и наличие уточняй у менеджера.',say:'Уточню наличие E60 без датчика.'},
-  'E60 4x4+D':{w:'BMW 5 E60/E61 ПОЛНЫЙ привод (xDrive), с датчиком.',cl:'Задний привод — это E60+D, другая рейка.',say:'Есть E60 полный с датчиком.'},
-  'E60 4x4-D':{w:'BMW 5 E60/E61 ПОЛНЫЙ привод (xDrive), без датчика.',cl:'В таблице этой версии нет — цену и наличие уточняй у менеджера.',say:'Уточню наличие E60 полный без датчика.'},
+  'E60+D 4x4':{w:'BMW 5 E60/E61 ПОЛНЫЙ привод (xDrive), с датчиком.',cl:'Задний привод — это E60+D, другая рейка.',say:'Есть E60 полный с датчиком.'},
+  'E60-D 4x4':{w:'BMW 5 E60/E61 ПОЛНЫЙ привод (xDrive), без датчика.',cl:'В таблице этой версии нет — цену и наличие уточняй у менеджера.',say:'Уточню наличие E60 полный без датчика.'},
   'E60 актив':{w:'BMW 5 E60/E61 — АКТИВНАЯ рейка, под 4 или 5 датчиков.',cl:'Отдельная редкая рейка, с обычной не путать. Цену и наличие уточняй у менеджера.',say:'Активная рейка E60 — уточню у менеджера.'},
   'OVC на рейке':{w:'Opel Vectra C (2002-2008) без датчика, под насос ГУР НА РЕЙКЕ.',cl:'Рейки под насос на рейке и под крылом разные! Марка насоса (TRW и т.п.) значения не имеет — важно место.',say:'Есть Vectra C без датчика, под насос на рейке.'},
   'OVC под крылом':{w:'Opel Vectra C (2002-2008) без датчика, под насос ГУР ПОД КРЫЛОМ.',cl:'Рейки под насос на рейке и под крылом разные! Марка насоса значения не имеет — важно место.',say:'Есть Vectra C без датчика, под насос под крылом.'},
@@ -370,7 +379,7 @@ const TP = {
 }
 
 const WMI = {
-  WAU:'Audi',WA1:'Audi',WBA:'BMW',WBS:'BMW',WBX:'BMW',WBY:'BMW',X4X:'BMW',
+  WAU:'Audi',WA1:'Audi',TRU:'Audi',WBA:'BMW',WBS:'BMW',WBX:'BMW',WBY:'BMW',X4X:'BMW',
   WDB:'Mercedes',WDD:'Mercedes',WDC:'Mercedes',WDF:'Mercedes',
   WVW:'VW',WV2:'VW',WV1:'VW',WVG:'VW',TMB:'Skoda',XW8:'Skoda',
   VSS:'Seat',VS6:'Seat',YV1:'Volvo',YV4:'Volvo',
@@ -398,7 +407,7 @@ const AUDI78 = {
   '8D':['b5','A4 B5'], '8E':['b67','A4 B6/B7'], '8H':['b67','A4 B6/B7 кабрио'],
   '8K':['b8','A4 B8'], '8T':['b8','A5'], '8F':['b8','A5 кабрио'], '8R':['b8','Q5'],
   '4B':['a6c5','A6 C5'], '4F':['c6','A6 C6'], '4L':['q7','Q7'], '4D':['a8','A8 D2'],
-  '8P':['a3','A3 8P'], '8V':['a3','A3 8V'], '8J':['a3','TT 8J'],
+  '8P':['a3','A3 8P'], '8V':['a3','A3 8V'], '8J':['a3','TT 8J'], '8N':['tt8n','TT 8N'],
   '8U':['q3','Q3 I'], 'F3':['q3','Q3 II']
 }
 function dv(v) {
@@ -408,7 +417,7 @@ function dv(v) {
 }
 
 // Google Sheets — наличие со склада
-let STOCK_FULL = {}, STOCK_BASE = {}, PRICE_FULL = {}, PRICE_BASE = {}, SUF_SEEN = {}
+let STOCK_FULL = {}, STOCK_BASE = {}, PRICE_FULL = {}, PRICE_BASE = {}, SUF_SEEN = {}, SHEET_OK = false
 
 // правильный разбор CSV (учитывает запятые и кавычки внутри полей)
 function parseCSV(text) {
@@ -445,7 +454,11 @@ function baseCode(s) {
 const QUAL = {
   'V70': [[/штуцер/i,' шт'], [/планк/i,' пл']],
   'OVC': [[/на\s*рейке/i,' на рейке'], [/под\s*крыл/i,' под крылом']],
-  'E60': [[/полн/i,' 4x4']]
+  'E60': [[/полн/i,' 4x4']],
+  'M35': [[/\bBL\b/i,' BL']],
+  'M6': [[/2002/,' гидро']],
+  'TRANSIT': [[/Transit\s*3|МК7|MK7/i,' 3'], [/Transit\s*4|МК8|MK8/i,' 4']],
+  'FF': [[/сух|механ/i,' мех']]
 }
 // сам суффикс («+D», «-D», «+», «-») или пустая строка, если его нет
 function sufCode(s) {
@@ -502,6 +515,8 @@ async function loadSheets() {
       }
       if (st > 0) cnt++
     }
+    // таблица реально загрузилась и разобралась (а не пришла пустой или с ошибкой)
+    SHEET_OK = Object.keys(PRICE_FULL).length > 20
     const el = document.getElementById('total-cnt')
     if (el) el.textContent = cnt + ' позиций'
   } catch(e) { console.warn('Sheets error', e) }
@@ -539,6 +554,9 @@ function getPrice(code) {
   const live = lookup(code, PRICE_FULL, PRICE_BASE)
   const fb = PR[code]
   if (live) return { d: live.d, r: live.r, note: fb && fb.note, live: true }
+  // таблица загрузилась, а позиции в ней нет (убрали из продажи или ещё не внесли) —
+  // старую цену из кода не показываем: она могла устареть. Пометку оставляем
+  if (SHEET_OK) return fb && fb.note ? { d: 0, r: '', note: fb.note, live: false } : null
   return fb ? { d: fb.d, r: fb.r, note: fb.note, live: false } : null
 }
 
@@ -590,7 +608,8 @@ const MODELS = {
     {l:'Golf 3 / Passat B3-B4 (1988-1998)', code:'G3'},
     {l:'Golf 4 / Bora (1997-2005)', code:'G4'},
     {l:'Golf 5 / 6 (2004-2012)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
-    {l:'Golf 7 / 8 (2013+)', code:'КР'},
+    {l:'Golf 7 (2013-2019)', code:'КР'},
+    {l:'Golf 8 (2020+)', code:'КР', label:'В таблице КР подписана 2013-2019 — на Golf 8 уточни у менеджера'},
     {l:'Jetta (5/6)', pre:{pw2:'e', vm09:'go', vm13:'ok7', vm:'ok7'}},
     {l:'Passat B5 (1996-2005)', code:'В5'},
     {l:'Passat B6 / B7 / CC', pre:{pw2:'e', vm09:'pt', vm13:'pb67'}},
@@ -611,7 +630,8 @@ const MODELS = {
   'Skoda': [
     {l:'Octavia Tour / A4', code:'G4'},
     {l:'Octavia A5 (2004-2012)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
-    {l:'Octavia A7 / A8 (2013+)', code:'КР'},
+    {l:'Octavia A7 (2013-2019)', code:'КР'},
+    {l:'Octavia A8 (2020+)', code:'КР', label:'В таблице КР подписана 2013-2019 — на Octavia A8 уточни у менеджера'},
     {l:'Superb 1 (до 2008)', code:'В5'},
     {l:'Superb 2 (2008-2015)', pre:{_superb2:true}},
     {l:'Superb 3 (2015+)', code:'КР'},
@@ -631,7 +651,8 @@ const MODELS = {
     {l:'A4 B8 / A5 / Q5', pre:{am:'b8'}},
     {l:'A6 C6 (2004-2011)', pre:{am:'c6'}},
     {l:'Q7 (= Touareg 1 / Cayenne 1)', pre:{_q7:true}},
-    {l:'A3 / TT', pre:{am:'a3'}},
+    {l:'A3 / TT 8J', pre:{am:'a3'}},
+    {l:'TT 8N (1998-2006)', pre:{am:'tt8n'}},
     {l:'Q3 I (2011-2018)', pre:{am:'q3', q3g:'1'}},
     {l:'Q3 II (2018+)', pre:{am:'q3', q3g:'2'}}
   ],
@@ -641,6 +662,7 @@ const MODELS = {
     {l:'X1 E84', pre:{bm:'e90', e9t:'x1'}},
     {l:'X3 E83', pre:{bm:'e90', e9t:'x3'}},
     {l:'Z4 E89', code:'E90 ЭУР'},
+    {l:'X5 E70 (2006-2013)', code:'X5 E70'},
     {l:'5 E39 (1995-2004)', pre:{bm:'e39'}},
     {l:'5 E60 / E61', pre:{bm:'e60'}},
     {l:'3 F30', pre:{bm:'fs', fm:'f30'}},
@@ -669,8 +691,9 @@ const MODELS = {
   'Volvo': [
     {l:'XC70 / XC60 / S60 / S80 / V60 (2007+)', pre:{vt:'xc'}},
     {l:'V70 / XC90 (до 2007, с кронштейном)', pre:{vt:'v7', vom:'s60'}},
-    {l:'S40 II / V50 (= Focus 2)', code:'FFCM'},
-    {l:'S40 / V40 (до 2004)', code:'Volvo S40'},
+    {l:'S40 II (2004-2012)', code:'Volvo S40'},
+    {l:'V50 (= Focus 2)', code:'FFCM'},
+    {l:'S40 / V40 (до 2004)', code:'⚠ нет', label:'В таблице есть рейка только на S40 с 2004 — на старый S40/V40 уточни у менеджера'},
     {l:'V40 II (2012-2019)', code:'Volvo V40 II'}
   ],
   'Ford': [
@@ -678,6 +701,7 @@ const MODELS = {
     {l:'Focus 2 / C-Max гидро (2004-2011)', pre:{fo:'f2g'}},
     {l:'Focus 3 / Kuga 2 / C-Max 2012+', pre:{fo:'f3'}},
     {l:'Fiesta / Fusion (2005-2010)', pre:{fo:'fie'}},
+    {l:'Mazda 2 (2005-2010) = Fiesta', pre:{fo:'fie'}},
     {l:'Courier / Fiesta MK4 (1996-2002)', pre:{fo:'cou'}},
     {l:'Mondeo 3 (2000-2007)', pre:{fo:'m3'}},
     {l:'Mondeo 4 / S-Max / Galaxy 2', pre:{fo:'m4'}},
@@ -721,8 +745,8 @@ const MODELS = {
     {l:'Laguna 1', pre:{rm:'rl1'}},
     {l:'Laguna 2', pre:{rm:'rl2'}},
     {l:'Laguna 3 / Latitude', pre:{rm:'rl3'}},
-    {l:'Logan 1 / Sandero 1 (до 2012)', pre:{rm:'lg1'}},
-    {l:'Logan рестайл 2012+ / Logan 2', pre:{rm:'lg2'}},
+    {l:'Logan 1 / Sandero 1 (2004-2015)', pre:{rm:'lg1'}},
+    {l:'Logan 2 (с 2014)', pre:{rm:'lg2'}},
     {l:'Kangoo (1997-2007)', pre:{rm:'kg'}},
     {l:'Espace 3', pre:{rm:'e3'}},
     {l:'Espace 4', pre:{rm:'e4'}},
@@ -741,6 +765,7 @@ const MODELS = {
   'Mazda': [
     {l:'Mazda 3 BK (2002-2009)', pre:{mam:'bk'}},
     {l:'Mazda 3 BL (2008-2011)', pre:{mam:'bl'}},
+    {l:'Mazda 2 (2005-2010)', pre:{mam:'m2'}},
     {l:'Mazda 6 GG гидро (2002-2007)', pre:{mam:'m6'}},
     {l:'CX-7', pre:{mam:'cx'}},
     {l:'Mazda 2 (= Fiesta/Fusion)', code:'FF'}
@@ -843,7 +868,7 @@ function go() {
   const mdEl = document.getElementById('md')
   if (mb && mdEl.value !== '') {
     const me = (MODELS[mb] || [])[+mdEl.value]
-    if (me) ST.answers = me.code ? { _force: me.code } : Object.assign({}, me.pre)
+    if (me) ST.answers = me.code ? { _force: me.code, _flabel: me.label } : Object.assign({}, me.pre)
   }
   document.getElementById('cnt').textContent = N
   document.getElementById('vi').value = ''
@@ -857,7 +882,7 @@ function go() {
 
 function getRC(info, ans) {
   if (!info || !info.brand) return { candidates:[], questions:[], unknown:true }
-  if (ans._force) return { candidates:[{code: ans._force}], questions:[] }
+  if (ans._force) return { candidates:[{code: ans._force, label: ans._flabel}], questions:[] }
   const yr = info.year || 2010, br = info.brand
   let c = [], q = []
   const ask = (id,t,o) => ({ id, text:t, options:o })
@@ -940,7 +965,7 @@ function getRC(info, ans) {
       if (a78 === '8U') ans.q3g = '1'
       if (a78 === 'F3') ans.q3g = '2'
     }
-    if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 (1994-2005)','В5'),opt('a6c5','A6 C5 (1997-2005)',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT (ЭУР)',null),opt('q3','Q3',null),opt('a8','A8 D2 (1994-2002)','A8D2')])]
+    if (!ans.am) q = [ask('am','Модель Audi:',[opt('b5','A4 B5 (1994-2005)','В5'),opt('a6c5','A6 C5 (1997-2005)',null),opt('b67','A4 B6/B7 (ТОЛЬКО KOYO!)',null),opt('b8','A4 B8 / A5 / Q5',null),opt('c6','A6 C6 2004-2011',null),opt('q7','Q7 / Touareg 1 / Cayenne 1',null),opt('a3','A3 / TT 8J (ЭУР)',null),opt('tt8n','TT 8N (1998-2006)','G4'),opt('q3','Q3',null),opt('a8','A8 D2 (1994-2002)','A8D2')])]
     else if (ans.am === 'q3') {
       // Q3 I (2011-2018) — платформа Tiguan 1, рейка БК (номер ЭУР 5N1). Q3 II (2018+) — MQB, КР.
       // 2018 — год смены поколений, по году не понять, поэтому спрашиваем кузов
@@ -976,7 +1001,7 @@ function getRC(info, ans) {
       if (!ans.q7s) q = [ask('q7s','Датчик Q7 / Touareg 1 / Cayenne 1:',[opt('y','Есть датчик','Q7+D'),opt('n','Без датчика','Q7-D')])]
       else c = [{code: ans.q7s === 'y' ? 'Q7+D' : 'Q7-D'}]
     } else {
-      const m = {b5:{code:'В5'},a8:{code:'A8D2'}}
+      const m = {b5:{code:'В5'},a8:{code:'A8D2'},tt8n:{code:'G4', label:'Audi TT 8N — база Golf 4'}}
       c = [m[ans.am]].filter(Boolean)
     }
 
@@ -984,7 +1009,7 @@ function getRC(info, ans) {
     if (!ans.bm && info.vin && info.vin.substring(3,6).toUpperCase() === 'LL3') {
       c = [{code:'E90 ЭУР', label:'BMW Z4 E89 → E90 ЭУР (по внутренней маркировке)'}]
     }
-    if (!ans.bm && !c.length) q = [ask('bm','Серия BMW:',[opt('e46','E46 / E36 (3 серия)',null),opt('e90','E90/91 / E87 / X1 E84 / X3 E83',null),opt('e39','E39 — 5 серия (1995-2004)',null),opt('e60','E60/E61 — 5 серия',null),opt('fs','F-серия (F30/F20/F10/F01/X3 F25)',null)])]
+    if (!ans.bm && !c.length) q = [ask('bm','Серия BMW:',[opt('e46','E46 / E36 (3 серия)',null),opt('e90','E90/91 / E87 / X1 E84 / X3 E83',null),opt('e39','E39 — 5 серия (1995-2004)',null),opt('e60','E60/E61 — 5 серия',null),opt('fs','F-серия (F30/F20/F10/F01/X3 F25)',null),opt('x5','X5 E70 (2006-2013)','X5 E70')])]
     else if (ans.bm === 'e46') {
       if (!ans.e4d) q = [ask('e4d','Привод E46/E36?',[opt('z','Задний привод',null),opt('p','Полный привод (xi / 4x4)','Е46 4х4')])]
       else if (ans.e4d === 'p') c = [{code:'Е46 4х4'}]
@@ -1006,11 +1031,12 @@ function getRC(info, ans) {
       else if (ans.e9t === 'e') c = [{code:'E90 ЭУР'}]
       // версии X3 E83 с датчиком (сервотроником) мы больше не возим — осталась только без датчика
       else if (ans.e9t === 'x3') c = [{code:'X3 E83-D', label:'Версии с сервотроником (датчиком) у нас больше нет'}]
-    } else if (ans.bm === 'e60') {
+    } else if (ans.bm === 'x5') c = [{code:'X5 E70'}]
+    else if (ans.bm === 'e60') {
       if (!ans.e6t) q = [ask('e6t','Какая рейка E60?',[opt('r','Задний привод',null),opt('4','Полный привод (xDrive)',null),opt('a','Активная — под 4-5 датчиков','E60 актив')])]
       else if (ans.e6t === 'a') c = [{code:'E60 актив'}]
       else if (!ans.e6s) q = [ask('e6s','Датчик E60:',[opt('y','Есть датчик',null),opt('n','Без датчика',null)])]
-      else c = [{code:'E60'+(ans.e6t==='4'?' 4x4':'')+(ans.e6s==='y'?'+D':'-D')}]
+      else c = [{code:'E60'+(ans.e6s==='y'?'+D':'-D')+(ans.e6t==='4'?' 4x4':'')}]
     }
     else if (ans.bm === 'e39') {
       if (!ans.e39s) q = [ask('e39s','Датчик E39:',[opt('y','Есть датчик','Е39+D'),opt('n','Без датчика','Е39-D')])]
@@ -1020,8 +1046,9 @@ function getRC(info, ans) {
       if (!ans.fm) q = [ask('fm','Кузов:',[opt('f21','1 серия F20/F21',null),opt('f30','3 серия F30 (2012-2020)','F20/F30'),opt('f10','5 серия F10','F10'),opt('x3f','X3 F25 (2010-2017)','X3 F25'),opt('f01','7 серия F01/F02',null)])]
       else if (ans.fm === 'f01') c = [{code:'F01', label:'BMW 7 F01 — наличие и цену уточнить у менеджера'}]
       // отдельной рейки на 1 серию у нас больше нет — честнее так и сказать, чем выдать снятый код
-      else if (ans.fm === 'f21') c = [{code:'⚠ нет', label:'Отдельной рейки на 1 серию F20/F21 у нас больше нет. Уточни у менеджера, подойдёт ли рейка от 3 серии F30.'}]
-      else { const m = {f30:{code:'F20/F30'},f10:{code:'F10'},x3f:{code:'X3 F25', label:'Часто под заказ — уточнить у менеджера'}}; c = [m[ans.fm]] }
+      // менеджер подтвердил: рейки на F20/F21 и F30 больше не возим, из таблицы их убрали
+      else if (ans.fm === 'f21' || ans.fm === 'f30') c = [{code:'⚠ нет', label:'Рейки на BMW F20/F21 и F30 у нас больше нет'}]
+      else { const m = {f10:{code:'F10'},x3f:{code:'X3 F25', label:'Часто под заказ — уточнить у менеджера'}}; c = [m[ans.fm]] }
     }
 
   } else if (br === 'Mercedes') {
@@ -1079,8 +1106,9 @@ function getRC(info, ans) {
       if (!ans.xcs) q = [ask('xcs','Датчик S60/S80/V60/XC60/XC70:',[opt('y','Есть датчик','XC70+D'),opt('n','Без датчика','XC70-D')])]
       else c = [{code: ans.xcs === 'y' ? 'XC70+D' : 'XC70-D'}]
     } else if (yr <= 2007) {
-      if (!ans.vom) q = [ask('vom','Модель:',[opt('s60','S60/V70/XC90 2000-2007 — с кронштейном',null),opt('s40','S40 II / V50 (2004-2012) = Focus 2','FFCM'),opt('s4o','S40 / V40 (до 2004)','Volvo S40')])]
-      else { const m = {s40:'FFCM',s4o:'Volvo S40'}; c = [{code: m[ans.vom]}].filter(x=>x.code) }
+      if (!ans.vom) q = [ask('vom','Модель:',[opt('s60','S60/V70/XC90 2000-2007 — с кронштейном',null),opt('s40','S40 II (2004-2012)','Volvo S40'),opt('v50','V50 (2004-2012) = Focus 2','FFCM'),opt('s4o','S40 / V40 (до 2004)',null)])]
+      else if (ans.vom === 's4o') c = [{code:'⚠ нет', label:'В таблице есть рейка только на S40 с 2004 — на старый S40/V40 уточни у менеджера'}]
+      else { const m = {s40:'Volvo S40',v50:'FFCM'}; c = [{code: m[ans.vom]}].filter(x=>x.code) }
     } else if (yr <= 2016) {
       if (!ans.vt) q = [ask('vt','Модель:',[opt('xc','S60/S80/V60/XC60/XC70 — без кронштейна',null),opt('v7','V70/XC90 — с кронштейном',null),opt('v42','V40 II (2012-2019)','Volvo V40 II')])]
       else { const m = {v42:'Volvo V40 II'}; c = [{code: m[ans.vt]}].filter(x=>x.code) }
@@ -1088,12 +1116,17 @@ function getRC(info, ans) {
     else c = [{code: ans.xcs === 'y' ? 'XC70+D' : 'XC70-D'}]
 
   } else if (br === 'Ford') {
-    if (!ans.fo) q = [ask('fo','Модель Ford:',[opt('f1','Focus 1 / Transit Connect до 2012','FF1'),opt('f2g','Focus 2 гидро / C-Max до 2011 / Volvo V50','FFCM'),opt('f3','Focus 3 / Kuga 2 / C-Max 2012+',null),opt('fie','Fiesta / Fusion (2005-2010)','FF'),opt('cou','Courier / Fiesta MK4 (1996-2002)','Courier'),opt('m3','Mondeo 3 (2000-2007)','FM3'),opt('m4','Mondeo 4 / S-Max / Galaxy','FM4'),opt('tr3','Transit 3 MK7 (2002-2013)','Transit 3'),opt('tr4','Transit 4 MK8 (2013+)','Transit 4')])]
+    if (!ans.fo) q = [ask('fo','Модель Ford:',[opt('f1','Focus 1 / Transit Connect до 2012','FF1'),opt('f2g','Focus 2 гидро / C-Max (2005-2008) / Volvo V50','FFCM'),opt('f3','Focus 3 / Kuga 2 / C-Max 2012+',null),opt('fie','Fiesta / Fusion / Mazda 2 (2005-2010)',null),opt('cou','Courier / Fiesta MK4 (1996-2002)','Courier'),opt('m3','Mondeo 3 (2000-2007)','FM3'),opt('m4','Mondeo 4 / S-Max / Galaxy','FM4'),opt('tr3','Transit 3 MK7 (2002-2013)','Transit 3'),opt('tr4','Transit 4 MK8 (2013+)','Transit 4')])]
     else if (ans.fo === 'f3') c = [{code:'FF3 или FFCM', combo:true, tp:{
       w:'Ford Focus 3 / Kuga 2 / C-Max 2012+. Бывает электрическая (FF3) и гидравлическая (FFCM).',
       cl:'Уточни у клиента какая рейка стоит в машине: электрическая или гидравлическая.',
       say:'Если у клиента электрическая — подходит FF3, если гидравлическая — FFCM.'}}]
-    else { const m = {f1:'FF1',f2g:'FFCM',fie:'FF',cou:'Courier',m3:'FM3',m4:'FM4',tr3:'Transit 3',tr4:'Transit 4'}; c = [{code:m[ans.fo]}] }
+    // Fiesta / Fusion / Mazda 2: в таблице есть обычная FF и механическая «сухая», без усилителя
+    else if (ans.fo === 'fie') {
+      if (!ans.ffm) q = [ask('ffm','Есть гидроусилитель руля?',[opt('y','Да, есть ГУР (трубки, бачок)','FF'),opt('n','Нет — механическая рейка без усилителя','FF мех')])]
+      else c = [{code: ans.ffm === 'n' ? 'FF мех' : 'FF'}]
+    }
+    else { const m = {f1:'FF1',f2g:'FFCM',cou:'Courier',m3:'FM3',m4:'FM4',tr3:'Transit 3',tr4:'Transit 4'}; c = [{code:m[ans.fo]}] }
 
   } else if (br === 'Peugeot') {
     if (!ans.pm && info.vin && info.vin.substring(0,3) === 'VF3') {
@@ -1104,7 +1137,7 @@ function getRC(info, ans) {
       if (pgm) ans.pm = pgm
     }
     if (ans.pm === 'p207') {
-      if (!ans.p207sh) q = [ask('p207sh','Форма фишки датчика на рейке:',[opt('o','Овальная (обычно ранние годы)','207 (овал)'),opt('r','Круглая (более поздние годы)','207 (круг)')])]
+      if (!ans.p207sh) q = [ask('p207sh','Форма фишки датчика на рейке:',[opt('o','Овальная (2002-2009)','207 (овал)'),opt('r','Круглая (2009-2014)','207 (круг)')])]
       else c = [{code: ans.p207sh === 'r' ? '207 (круг)' : '207 (овал)'}]
     }
     else if (!ans.pm) q = [ask('pm','Модель:',[opt('p3','307/308/408/Partner B9/C4 (гидравлика)',null),opt('fr','308 / 3008 / C4 Picasso (2014+) — электро','FR'),opt('p207','207 / C3 Picasso ЭУР',null),opt('pm59','Partner M59 / Xsara Picasso','XSP'),opt('p406','406',null),opt('p407','407',null),opt('p607','607','607'),opt('p508','508','508'),opt('bx','Boxer / Jumper / Ducato','Boxer'),opt('exii','Expert II / Scudo 2 / Jumpy (2007-2016)','Expert II'),opt('ex3','Expert 3 (2016+)','Expert 3'),opt('p806','806','806'),opt('p807','807','807'),opt('p107','107 / C1 / Aygo','AYGO')])]
@@ -1130,7 +1163,7 @@ function getRC(info, ans) {
 
   } else if (br === 'Citroën') {
     if (ans.cm === 'ds3') {
-      if (!ans.ds3sh) q = [ask('ds3sh','Форма фишки датчика на рейке:',[opt('o','Овальная (обычно ранние годы)','207 (овал)'),opt('r','Круглая (более поздние годы)','207 (круг)')])]
+      if (!ans.ds3sh) q = [ask('ds3sh','Форма фишки датчика на рейке:',[opt('o','Овальная (2002-2009)','207 (овал)'),opt('r','Круглая (2009-2014)','207 (круг)')])]
       else c = [{code: ans.ds3sh === 'r' ? '207 (круг)' : '207 (овал)'}]
     }
     else if (!ans.cm) q = [ask('cm','Модель:',[opt('c4','C4 / Berlingo / Partner (с 2008, гидравлика)',null),opt('frc','C4 Picasso / 308 / 3008 (2014+) — электро','FR'),opt('xsp','Xsara Picasso / Berlingo M59 / Partner M59','XSP'),opt('c23','C2/C3 гидравлика (2002-2009)','C2/C3'),opt('ds3','DS3 / C3 Picasso ЭУР (2009-2016)',null),opt('c5','C5 до 2008','С5'),opt('c5x','C5 X7 (2008+)','С5 X7'),opt('jm','Jumper / Boxer / Ducato','Boxer'),opt('jyii','Jumpy / Expert II / Scudo 2 (2007-2016)','Expert II'),opt('jy3','Jumpy / Expert 3 (2016+)','Expert 3'),opt('c3a','C3 Aircross','C3 Aircross'),opt('c1','C1 / 107 / Aygo','AYGO')])]
@@ -1149,7 +1182,7 @@ function getRC(info, ans) {
     }
 
   } else if (br === 'Renault') {
-    if (!ans.rm) q = [ask('rm','Модель:',[opt('sc','Scenic 1 / Megane 1 до 2003 (передний привод)','SC'),opt('scrx','Scenic RX4 4x4 (1996-2003)','SC RX'),opt('sc2','Scenic 2 / Megane 2 (2002-2009)','SC2/Meg2'),opt('rl1','Laguna 1',null),opt('rl2','Laguna 2','RL2'),opt('rl3','Laguna 3 / Latitude','RL3'),opt('lg1','Logan 1 / Sandero 1 до 2012','LG1'),opt('lg2','Logan рестайл 2012+ / Logan 2','LG2'),opt('kg','Kangoo (1997-2007)',null),opt('e3','Espace 3','ESP 3'),opt('e4','Espace 4','ESP4'),opt('tr','Trafic / Vivaro','Trafic'),opt('ms','Master 3','Master 3')])]
+    if (!ans.rm) q = [ask('rm','Модель:',[opt('sc','Scenic 1 / Megane 1 до 2003 (передний привод)','SC'),opt('scrx','Scenic RX4 4x4 (1996-2003)','SC RX'),opt('sc2','Scenic 2 / Megane 2 (2002-2009)','SC2/Meg2'),opt('rl1','Laguna 1',null),opt('rl2','Laguna 2','RL2'),opt('rl3','Laguna 3 / Latitude','RL3'),opt('lg1','Logan 1 / Sandero 1 (2004-2015) — крепление штуцера','LG1'),opt('lg2','Logan 2 (с 2014) — крепление планка','LG2'),opt('kg','Kangoo (1997-2007)',null),opt('e3','Espace 3','ESP 3'),opt('e4','Espace 4','ESP4'),opt('tr','Trafic / Vivaro','Trafic'),opt('ms','Master 3','Master 3')])]
     else if (ans.rm === 'kg') {
       if (!ans.kgd) q = [ask('kgd','Привод Kangoo:',[opt('f','Передний привод','Kangoo'),opt('4','4x4','Kangoo 4х4')])]
       else c = [{code: ans.kgd === '4' ? 'Kangoo 4х4' : 'Kangoo'}]
@@ -1181,8 +1214,16 @@ function getRC(info, ans) {
     }
 
   } else if (br === 'Mazda') {
-    if (!ans.mam) q = [ask('mam','Модель:',[opt('bk','Mazda 3 BK (2002-2009)','M35'),opt('bl','Mazda 3 BL (2008-2011)','M35 BL'),opt('m6','Mazda 6 GG ГУР','M6 гидро'),opt('cx','Mazda CX-7','CX7')])]
-    else { const m = {bk:'M35',bl:'M35 BL',m6:'M6 гидро',cx:'CX7'}; c = [{code:m[ans.mam]}] }
+    if (!ans.mam) q = [ask('mam','Модель:',[opt('bk','Mazda 3 BK (2002-2009)',null),opt('bl','Mazda 3 BL (2008-2011)','M35 BL'),opt('m2','Mazda 2 (2005-2010) = Ford Fiesta',null),opt('m6','Mazda 6 GG ГУР','M6 гидро'),opt('cx','Mazda CX-7','CX7')])]
+    else if (ans.mam === 'bk') {
+      if (!ans.m3s) q = [ask('m3s','Датчик Mazda 3 BK:',[opt('y','Есть датчик','M35+D'),opt('n','Без датчика','M35')])]
+      else c = [{code: ans.m3s === 'y' ? 'M35+D' : 'M35'}]
+    }
+    else if (ans.mam === 'm2') {
+      if (!ans.ffm) q = [ask('ffm','Есть гидроусилитель руля?',[opt('y','Да, есть ГУР (трубки, бачок)','FF'),opt('n','Нет — механическая рейка без усилителя','FF мех')])]
+      else c = [{code: ans.ffm === 'n' ? 'FF мех' : 'FF', label:'Mazda 2 = база Ford Fiesta'}]
+    }
+    else { const m = {bl:'M35 BL',m6:'M6 гидро',cx:'CX7'}; c = [{code:m[ans.mam]}] }
 
   } else if (br === 'Mitsubishi') {
     c = [{code:'Colt'}]
@@ -1267,7 +1308,7 @@ function getRC(info, ans) {
       if (info.year >= 2009) ans.crm = 'v5'
       else if (info.year >= 2001 && info.year <= 2006) ans.crm = 'v4'
     }
-    if (!ans.crm) q = [ask('crm','Модель Chrysler / Dodge:',[opt('v4','Voyager / Caravan 4 (2001-2008)','V4'),opt('v5','Voyager / Caravan 5 (2008+)','V5'),opt('pt','PT Cruiser (2000-2010)','PT')])]
+    if (!ans.crm) q = [ask('crm','Модель Chrysler / Dodge:',[opt('v4','Voyager / Caravan 4 (2001-2008)','V4'),opt('v5','Voyager / Caravan 5 (2008-2011)','V5'),opt('pt','PT Cruiser (2000-2010)','PT')])]
     else { const m = {v4:'V4',v5:'V5',pt:'PT'}; const rd = dsplit(m[ans.crm]); if (rd) return rd; c = [{code:m[ans.crm]}] }
 
   } else return { candidates:[], questions:[], unknown:true }
@@ -1325,6 +1366,8 @@ function showRes(cands) {
     h += '<div><div class="rcode">' + (no ? 'Нет' : c.code) + '</div>'
     if (c.label) h += '<p style="font-size:12px;color:var(--tx2);margin-top:4px">' + c.label + '</p>'
     if (pr && pr.note) h += '<div class="nc"><i class="ti ti-clock" style="font-size:11px"></i>' + pr.note + '</div>'
+    // позиции нет в загруженной таблице — прямо говорим селлеру, а не оставляем гадать
+    else if (SHEET_OK && !pr && !no && !c.combo) h += '<div class="nc"><i class="ti ti-alert-triangle" style="font-size:11px"></i>Нет в текущей таблице — цену и наличие уточни у менеджера</div>'
     h += '</div>'
     if (no) h += '<span class="berr"><i class="ti ti-x" style="font-size:12px"></i>Нет</span>'
     else if (c.combo) {}
@@ -1361,15 +1404,15 @@ function addH(v, i, cands) {
 function renderCat() {
   const groups = [
     {g:'VAG', i:['СК GEN-1','СК','3Т','БК','КР','В8','G3','G4','В5','Sh+','SH дорест','T4','T5','Caddy','Jetta']},
-    {g:'BMW', i:['Е46+','Е46-','Е46 4х4','E90','E90 ЭУР','E90+D 4х4','E90 4х4','Е39+D','Е39-D','E60+D','E60-D','E60 4x4+D','E60 4x4-D','E60 актив','F20/F30','F10','X3 E83-D','X3 F25']},
+    {g:'BMW', i:['Е46+','Е46-','Е46 4х4','E90','E90 ЭУР','E90+D 4х4','E90 4х4','Е39+D','Е39-D','E60+D','E60-D','E60+D 4x4','E60-D 4x4','E60 актив','F10','X3 E83-D','X3 F25','X5 E70']},
     {g:'Mercedes', i:['W168','W169','W246','W203','W203+D','W204-D','W204+D','W204 ЭУР','W205','W210-D','W210+D','W211+D','W211-D','W212+D','W212-D','W212 4x4','W220','W220+D','W163','W164+D','W164-D','W167','W639 4х2','W639 4х4','SPR']},
     {g:'Volvo', i:['XC70-D','XC70+D','V70+D шт','V70-D шт','V70+D пл','V70-D пл','Volvo S40','Volvo V40 II']},
-    {g:'Ford', i:['FF','FF1','FFCM','FF3','FM3','FM4','Courier','Transit 3','Transit 4']},
+    {g:'Ford', i:['FF','FF мех','FF1','FFCM','FF3','FM3','FM4','Courier','Transit 3','Transit 4']},
     {g:'Peugeot / Citroën', i:['FR3+','FR3-','XSP','C2/C3','С5','С5 X7','207 (овал)','207 (круг)','407','407+D','406+D','406шт.','406пл.','607','508','208','C3','FR','Boxer+D','Boxer-D','Expert II','Expert 3','AYGO']},
     {g:'Renault', i:['SC','SC RX','SC2/Meg2','RL1','RL1+D','RL2','RL2+D','RL3','RL3+D','LG1','LG2','Kangoo','ESP 3','ESP4+D','ESP4-D','Trafic','Master 3']},
     {g:'Opel / Chevrolet', i:['OA/OZ пл.','OA/OZ шт.','OVC на рейке','OVC под крылом','OVC+D на рейке','OVC+D под крылом','OVB','OAJ','Antara','AVEO']},
     {g:'Audi', i:['В5','B6/B7','B6/B7+D','А6С5','А6С5+D','А6С6+D','А6С6-D','A4B8+D','A4B8-D','Q7-D','Q7+D','A8D2']},
-    {g:'Mazda / Mitsubishi', i:['M35','M35 BL','M6 гидро','CX7','Colt']},
+    {g:'Mazda / Mitsubishi', i:['M35','M35+D','M35 BL','M6 гидро','CX7','Colt']},
     {g:'Chrysler / Dodge', i:['V4','V5','PT+D','PT-D']},
     {g:'Fiat / Alfa Romeo', i:['DOBLO','AR147','AR159','AR166']},
     {g:'Nissan / Honda / Suzuki / Toyota', i:['N16','P12','CRV','5D','Swift','AYGO']},
@@ -1383,7 +1426,7 @@ function renderCat() {
       const pr = getPrice(code), s = getStock(code)
       h += '<div class="cc">'
       h += '<p style="font-size:12px;font-weight:600;margin-bottom:3px">' + code + '</p>'
-      if (pr) {
+      if (pr && pr.d) {
         h += '<p style="font-size:11px;color:var(--tx2)">' + fmt(pr.d) + ' ₽</p>'
         h += '<p style="font-size:11px;color:var(--g2);font-weight:600">' + fmt(pr.r) + ' ₽ розн.</p>'
       } else {
