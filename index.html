@@ -926,6 +926,20 @@ function getRC(info, ans) {
       const sk78 = info.vin.substring(6,8).toUpperCase()
       if (sk78 === '3T') ans._superb2 = true                                        // Superb 2
       else if (sk78 === '3V' || sk78 === 'NX') { ans.vm = 'ok7'; ans.vm13 = 'ok7' } // Superb 3 = MQB → КР
+      // Octavia A5 — всегда ЭУР (как в списке моделей), поэтому «ГУР или ЭУР» не спрашиваем
+      else if (sk78 === '1Z') { ans.pw2 = 'e'; ans.vm09 = 'go'; ans.vm13 = 'ot3' }
+    }
+    // Гидрорейки VAG: в общем списке перемешаны VW, Skoda и Seat. Показываем только то, что
+    // бывает у этой марки, а если вариант один — сразу выдаём код (совет селлеров)
+    const GUR_BY_BRAND = {
+      Skoda: {g4:'Octavia Tour / A4', pb5:'Superb 1 (до 2008)'},
+      Seat:  {g4:'Toledo 2 (до 2005)', sh:'Alhambra 1'}
+    }
+    const gurAsk = (id, text, list, codes) => {
+      const allow = GUR_BY_BRAND[br]
+      const opts = allow ? list.filter(o => o.value in allow).map(o => opt(o.value, allow[o.value], o.code)) : list
+      if (opts.length === 1) return { code: codes[opts[0].value] }
+      return { q: [ask(id, text, opts)] }
     }
     // Skoda Superb 2: в 90% случаев 3Т, но бывают исключения — предупреждаем селлера
     if (ans._superb2) return { candidates:[{code:'3Т', tp:{
@@ -937,8 +951,11 @@ function getRC(info, ans) {
     if (yr === 2008 || yr === 2009) {
       if (!ans.pw2 && !ans.p0809 && !ans.vgm) return { candidates:[], questions:[ask('pw2','Тип усилителя руля? (в 2008-2009 бывает и то, и другое)',[opt('e','ЭУР — электро (мотор с проводами на рейке)',null),opt('g','ГУР — гидравлика (трубки, бачок)',null)])] }
       if (ans.pw2 === 'g' || ans.vgm) {
-        if (!ans.vgm) return { candidates:[], questions:[ask('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+'),opt('cdy','Caddy ГУР (2003-2010)','Caddy'),opt('jt','Jetta 5 гидравлика','Jetta')])] }
         const mg = {g4:'G4',sh:'Sh+',cdy:'Caddy',jt:'Jetta'}
+        if (!ans.vgm) {
+          const g = gurAsk('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+'),opt('cdy','Caddy ГУР (2003-2010)','Caddy'),opt('jt','Jetta 5 гидравлика','Jetta')], mg)
+          return g.code ? { candidates:[{code:g.code}], questions:[] } : { candidates:[], questions:g.q }
+        }
         return { candidates:[{code:mg[ans.vgm]}], questions:[] }
       }
       if (!ans.p0809) return { candidates:[], questions:[ask('p0809','2008-2009 — переходный год, 3 варианта ЭУР. По VIN не бьётся! Уточни у клиента что стоит:',[
@@ -961,10 +978,16 @@ function getRC(info, ans) {
     } else if (yr >= 2004) {
       if (!ans.pw2) q = [ask('pw2','Тип усилителя руля?',[opt('g','ГУР — гидравлика',null),opt('e','ЭУР — электро',null)])]
       else if (ans.pw2 === 'e') c = [{code:'СК'}]
-      else if (!ans.vgm) q = [ask('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+'),opt('cdy','Caddy ГУР (2003-2010)','Caddy'),opt('jt','Jetta 5 гидравлика','Jetta'),opt('pb5','Passat B5 / Superb 1 (до 2005)','В5')])]
+      else if (!ans.vgm) {
+        const g = gurAsk('vgm','Модель (ГУР):',[opt('g4','Golf 4 / Bora / Octavia A4','G4'),opt('sh','Sharan 1 / Alhambra 1 (до 2010)','Sh+'),opt('cdy','Caddy ГУР (2003-2010)','Caddy'),opt('jt','Jetta 5 гидравлика','Jetta'),opt('pb5','Passat B5 / Superb 1 (до 2005)','В5')], {g4:'G4',sh:'Sh+',cdy:'Caddy',jt:'Jetta',pb5:'В5'})
+        if (g.code) c = [{code:g.code}]; else q = g.q
+      }
       else { const m = {g4:'G4',sh:'Sh+',cdy:'Caddy',jt:'Jetta',pb5:'В5'}; c = [{code:m[ans.vgm]}] }
     } else if (yr >= 1998) {
-      if (!ans.vg0) q = [ask('vg0','Модель:',[opt('g4','Golf 4 / Bora / Octavia A4 Tour','G4'),opt('pb5','Passat B5 (1996-2005) / Superb 1','В5'),opt('sh','Sharan 1 рестайлинг (с 2003)','Sh+'),opt('g3','Golf 3 / Passat B3-B4 / Vento (1988-1998)','G3')])]
+      if (!ans.vg0) {
+        const g = gurAsk('vg0','Модель:',[opt('g4','Golf 4 / Bora / Octavia A4 Tour','G4'),opt('pb5','Passat B5 (1996-2005) / Superb 1','В5'),opt('sh','Sharan 1 рестайлинг (с 2003)','Sh+'),opt('g3','Golf 3 / Passat B3-B4 / Vento (1988-1998)','G3')], {g4:'G4',pb5:'В5',sh:'Sh+',g3:'G3'})
+        if (g.code) c = [{code:g.code}]; else q = g.q
+      }
       else { const m0 = {g4:'G4',pb5:'В5',sh:'Sh+',g3:'G3'}; c = [{code:m0[ans.vg0]}] }
     } else c = [{code:'G3'}]
 
