@@ -95,6 +95,7 @@ input,button{font-family:'Plus Jakarta Sans',-apple-system,sans-serif}
       <button class="nl act" id="n0" onclick="nav(0)">По VIN</button>
       <button class="nl" id="n1" onclick="nav(1)">Каталог</button>
       <button class="nl" id="n2" onclick="nav(2)">✦ ИИ</button>
+      <button class="nl" onclick="logout()" title="Выйти"><i class="ti ti-logout" style="font-size:15px"></i></button>
     </div>
   </div>
 </nav>
@@ -585,15 +586,40 @@ function tpw() {
   i.type = i.type === 'password' ? 'text' : 'password'
   ic.className = i.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off'
 }
+// ── Запоминаем вход, историю и счётчик между заходами (в браузере селлера) ──
+// Обёрнуто в try: в приватном режиме или при запрете хранилища сайт просто работает как раньше
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)) } catch(e) { return null } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch(e) {} }
+function today() { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() }
+// отпечаток пароля: если пароль сменят, все сохранённые входы перестанут действовать
+function pwKey() { let h = 5381; for (const ch of PW) h = ((h << 5) + h + ch.charCodeAt(0)) | 0; return String(h) }
+const AUTH_DAYS = 30
+
+function enterApp() {
+  document.getElementById('perr').style.display = 'none'
+  document.getElementById('pg-login').classList.remove('on')
+  document.getElementById('pg-vin').classList.add('on')
+  loadSheets()
+}
 function login() {
   if (document.getElementById('pw').value === PW) {
-    document.getElementById('perr').style.display = 'none'
-    document.getElementById('pg-login').classList.remove('on')
-    document.getElementById('pg-vin').classList.add('on')
-    loadSheets()
+    lsSet('seroba_auth', { k: pwKey(), t: Date.now() })
+    enterApp()
   } else {
     document.getElementById('perr').style.display = 'block'
   }
+}
+function logout() {
+  try { localStorage.removeItem('seroba_auth') } catch(e) {}
+  location.reload()
+}
+// «Запросов сегодня»: копится в течение дня, в полночь начинается заново
+function bumpCount() {
+  const c = lsGet('seroba_cnt')
+  if (!c || c.d !== today()) N = 0
+  N++
+  lsSet('seroba_cnt', { d: today(), n: N })
+  document.getElementById('cnt').textContent = N
 }
 // число → «17 000»; строка-вилка из таблицы «17000-18000» → «17 000–18 000»
 function fmt(n) {
@@ -872,7 +898,7 @@ function go() {
   else return
   if (mb) { info.brand = mb; info.known = true }
   if (myr && myr >= 1985 && myr <= 2026) info.year = myr
-  ST = { vin: v.length === 17 ? v : mb + (info.year ? ' · ' + info.year : ''), info, answers:{} }; N++
+  ST = { vin: v.length === 17 ? v : mb + (info.year ? ' · ' + info.year : ''), info, answers:{} }; bumpCount()
   const mdEl = document.getElementById('md')
   if (mb && mdEl.value !== '') {
     const me = (MODELS[mb] || [])[+mdEl.value]
@@ -1445,6 +1471,10 @@ function showRes(cands) {
 function addH(v, i, cands) {
   H.unshift({ v, brand: i?.brand||'?', year: i?.year||'', code: cands.map(c=>c.code).join(' / ') })
   if (H.length > 5) H.pop()
+  lsSet('seroba_hist', H)
+  renderH()
+}
+function renderH() {
   let html = ''
   H.forEach((h, idx) => {
     html += '<div class="hi" style="animation-delay:' + (idx*0.05) + 's">'
@@ -1547,6 +1577,16 @@ async function sendChat() {
   document.getElementById('chat-btn').disabled = false
   msgs.lastElementChild.scrollIntoView({ behavior:'smooth' })
 }
+
+// при открытии сайта — восстанавливаем вход, последние запросы и счётчик за сегодня
+;(function restore() {
+  const a = lsGet('seroba_auth')
+  if (a && a.k === pwKey() && Date.now() - a.t < AUTH_DAYS * 24 * 3600 * 1000) enterApp()
+  const h = lsGet('seroba_hist')
+  if (Array.isArray(h) && h.length) { H = h.slice(0, 5); renderH() }
+  const c = lsGet('seroba_cnt')
+  if (c && c.d === today()) { N = c.n || 0; document.getElementById('cnt').textContent = N }
+})()
 </script>
 </body>
 </html>
