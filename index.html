@@ -413,7 +413,7 @@ const AUDI78 = {
   '8U':['q3','Q3 I'], 'F3':['q3','Q3 II']
 }
 // модели VW, которые узнаём по коду кузова (позиции 7-8 VIN)
-const VW78 = { '5N':'Tiguan 1', 'AD':'Tiguan 2', 'BT':'Tiguan 2' }
+const VW78 = { '5N':'Tiguan 1', 'AD':'Tiguan 2', 'BT':'Tiguan 2', '3C':'Passat B6 / CC', '36':'Passat B7 / CC', '35':'Passat CC' }
 function dv(v) {
   let brand = WMI[v.substring(0,3)] || WMI[v.substring(0,2)] || null
   const c78 = v.length === 17 ? v.substring(6,8).toUpperCase() : ''
@@ -983,6 +983,9 @@ function getRC(info, ans) {
     // Поэтому при любом годе спрашиваем признаки мотора рейки. Узнаём по VIN (кузов 5N) или по выбору модели
     const vin78 = info.vin && info.vin.length === 17 ? info.vin.substring(6,8).toUpperCase() : ''
     if (vin78 === 'AD' || vin78 === 'BT') return { candidates:[{code:'В8', label:'Tiguan 2 (по VIN)'}], questions:[] }
+    // Passat B6 / B7 / CC по VIN (кузов 3C, 36, 35): с 2010 года — БК, модель не спрашиваем.
+    // 2008-2009 — переходные годы, там ниже спросим признаки рейки как обычно
+    if (['3C','36','35'].includes(vin78) && yr >= 2010) return { candidates:[{code:'БК', label:'Passat B6 / B7 / CC (по VIN)'}], questions:[] }
     if (vin78 === '5N' || ans._tig1 || ans.vm09 === 'tg' || ans.vm13 === 'tg') {
       if (!ans.tgs) return { candidates:[], questions:[ask('tgs','Tiguan 1 бывает и на 3Т, и на БК. Попроси клиента посмотреть на мотор рейки:',[
         opt('bk','Белая пластиковая крышка, 4 точки крепления, номер начинается на 5N1','БК'),
