@@ -283,8 +283,8 @@ const PR = {
 
 const TP = {
   'СК':{w:'ЭУР 2-я генерация: номер на моторе ЭУР начинается на 1К1, справа 2 точки крепления (скоба). VW Golf 5, Jetta 5, Touran 1, Caddy, Passat; Skoda Octavia A5, Yeti; Audi A3; Seat Leon, Toledo, Altea — ранние годы.',cl:'С 2009 года на этих машинах уже может стоять 3Т. В 2008-2009 сверь номер на моторе ЭУР: 1К1 → СК, 1К0 → 3Т, 5N1 (белая крышка) → БК. ⚠ Не путай с номером рейки из каталога запчастей (например 1K1423055M) — это номер всей рейки, он бывает на 1K1 даже у 3Т. В каталоге смотри надпись: GENERATION 2 → СК, GENERATION 3 → 3Т.',say:'Есть СК. Уточните год и номер на моторе ЭУР — должен начинаться на 1К1.'},
-  '3Т':{w:'ЭУР 3-я генерация: номер на моторе ЭУР начинается на 1К0, справа 3 точки крепления, один болт, литое ухо. VW Golf 5-6, Touran, Caddy, Tiguan 1 (часть машин — бывает и БК); Skoda Octavia A5, Yeti, Superb 2; Audi A3; Seat Leon 2 — с 2009 года.',cl:'До 2009 года на этих машинах — СК. В 2008-2009 сверь номер на моторе ЭУР: 1К0 → 3Т, 1К1 → СК, 5N1 (белая крышка) → БК. ⚠ Не путай с номером рейки из каталога запчастей (например 1K1423055M) — это номер всей рейки, он бывает на 1K1 даже у 3Т. В каталоге смотри надпись: GENERATION 3 → 3Т, GENERATION 2 → СК.',say:'Есть 3Т. Уточните номер на моторе ЭУР — должен начинаться на 1К0.'},
-  'БК':{w:'ZF, белая пластиковая крышка на моторе, 4 точки крепления, номер начинается на 5N1. Passat B6-B7, CC, Sharan 2, Tiguan 1, Audi Q3 I (2011-2018).',cl:'На Tiguan 1 бывает и БК, и 3Т — сверь мотор: белая крышка и 5N1 → БК, 3 точки и 1К0 → 3Т. Sharan 1 → Sh+.',say:'Есть БК. Уточните: на моторе рейки белая крышка, номер на 5N1?'},
+  '3Т':{w:'ЭУР 3-я генерация: номер на моторе ЭУР начинается на 1К0, справа 3 точки крепления, один болт, литое ухо. VW Golf 5-6, Caddy, Touran и Tiguan 1 (на них бывает и БК); Skoda Octavia A5, Yeti, Superb 2; Audi A3; Seat Leon 2 — с 2009 года.',cl:'До 2009 года на этих машинах — СК. В 2008-2009 сверь номер на моторе ЭУР: 1К0 → 3Т, 1К1 → СК, 5N1 (белая крышка) → БК. ⚠ Не путай с номером рейки из каталога запчастей (например 1K1423055M) — это номер всей рейки, он бывает на 1K1 даже у 3Т. В каталоге смотри надпись: GENERATION 3 → 3Т, GENERATION 2 → СК.',say:'Есть 3Т. Уточните номер на моторе ЭУР — должен начинаться на 1К0.'},
+  'БК':{w:'ZF, белая пластиковая крышка на моторе, 4 точки крепления, номер начинается на 5N1. Passat B6-B7, CC, Sharan 2, Tiguan 1, Touran с 2009, Audi Q3 I (2011-2018).',cl:'На Tiguan 1 и Touran с 2009 бывает и БК, и 3Т — сверь мотор: белая крышка и 5N1 → БК, 3 точки и 1К0 → 3Т. Sharan 1 → Sh+.',say:'Есть БК. Уточните: на моторе рейки белая крышка, номер на 5N1?'},
   'КР':{w:'MQB. Octavia A7, Golf 7, Jetta 6 (2013-2019), Superb 3.',cl:'В таблице КР подписана 2013-2019 — на Golf 8 / Octavia A8 (с 2020) уточни у менеджера. Superb 3 = КР, не В8. А Tiguan 2 — В8, не КР!',say:'Есть КР.'},
   'В8':{w:'Passat B8 (2015+), Superb 3 B8, Tiguan 2 (2016+). Артикул 5Q0.',cl:'Passat B7 — там БК.',say:'Есть В8.'},
   'N16':{w:'Nissan Almera N16 (2000-2006) / Almera Classic (2006-2013).',cl:'Часто под заказ.',say:'Есть N16.'},
@@ -649,7 +649,7 @@ const MODELS = {
     {l:'Passat B8 (2015+)', code:'В8'},
     {l:'Tiguan 1 (2007-2016)', pre:{_tig1:true}},
     {l:'Tiguan 2 (2016+)', code:'В8'},
-    {l:'Touran', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
+    {l:'Touran 1 (2003-2015)', pre:{pw2:'e', _tour:true}},
     {l:'Caddy (ЭУР)', pre:{pw2:'e', vm09:'go', vm13:'ot3'}},
     {l:'Sharan 1 / Alhambra (до 2010)', pre:{pw2:'g', vgm:'sh'}},
     {l:'Sharan 2 (2010+)', pre:{vm09:'pt', vm13:'pb67'}},
@@ -996,6 +996,18 @@ function getRC(info, ans) {
       if (ans.tgs === 't3') return { candidates:[{code:'3Т', label:'Tiguan 1'}], questions:[] }
       return { candidates:[{code:'3Т', label:'Tiguan 1 — если 3 точки и номер 1К0'},{code:'БК', label:'Tiguan 1 — если белая крышка и номер 5N1'}], questions:[] }
     }
+    // Touran 1 с 2009 года: бывает и 3Т, и БК — так же, как Tiguan 1, спрашиваем признаки мотора рейки.
+    // Узнаём по VIN (кузов 1T) или по выбору модели. 2008 и раньше — как обычно ниже
+    if ((vin78 === '1T' || ans._tour || ans.vm09 === 'tu' || ans.vm13 === 'tu') && yr >= 2009 && yr <= 2015) {
+      if (!ans.tus) return { candidates:[], questions:[ask('tus','Touran с 2009 года бывает и на 3Т, и на БК. Попроси клиента посмотреть на мотор рейки:',[
+        opt('bk','Белая пластиковая крышка, 4 точки крепления, номер начинается на 5N1','БК'),
+        opt('t3','3 точки крепления, один болт, литое ухо, номер начинается на 1К0','3Т'),
+        opt('d','Не знаю — показать обе',null)
+      ])] }
+      if (ans.tus === 'bk') return { candidates:[{code:'БК', label:'Touran'}], questions:[] }
+      if (ans.tus === 't3') return { candidates:[{code:'3Т', label:'Touran'}], questions:[] }
+      return { candidates:[{code:'3Т', label:'Touran — если 3 точки и номер 1К0'},{code:'БК', label:'Touran — если белая крышка и номер 5N1'}], questions:[] }
+    }
     // 2008-2009 — переходные годы для всех VAG: бывают и ГУР, и ЭУР (СК/3Т/БК). По VIN не определить!
     if (yr === 2008 || yr === 2009) {
       if (!ans.pw2 && !ans.p0809 && !ans.vgm) return { candidates:[], questions:[ask('pw2','Тип усилителя руля? (в 2008-2009 бывает и то, и другое)',[opt('e','ЭУР — электро (мотор с проводами на рейке)',null),opt('g','ГУР — гидравлика (трубки, бачок)',null)])] }
@@ -1024,10 +1036,10 @@ function getRC(info, ans) {
       if (!ans.vm) q = [ask('vm','Уточните модель:',[opt('ok7','Octavia A7/A8, Golf 7/8, Jetta 6, Superb 3','КР'),opt('pb8','Passat B8 / Tiguan 2 (2016+)','В8'),opt('ot','Другая',null)])]
       else c = [ans.vm === 'pb8' ? {code:'В8', label:'Скорее всего В8 — сверить по схеме на autoostrov.by'} : {code:'КР'}]
     } else if (yr >= 2013) {
-      if (!ans.vm13) q = [ask('vm13','Модель:',[opt('ok7','Octavia A7, Golf 7/8, Jetta 6','КР'),opt('pb67','Passat B6/B7, CC, Sharan 2','БК'),opt('tg','Tiguan 1',null),opt('ot3','Touran / Golf 5-6 / Другой','3Т')])]
+      if (!ans.vm13) q = [ask('vm13','Модель:',[opt('ok7','Octavia A7, Golf 7/8, Jetta 6','КР'),opt('pb67','Passat B6/B7, CC, Sharan 2','БК'),opt('tg','Tiguan 1',null),opt('tu','Touran',null),opt('ot3','Golf 5-6 / Другой','3Т')])]
       else { const m={ok7:{code:'КР'},pb67:{code:'БК'},ot3:{code:'3Т'}}; c = [m[ans.vm13]||{code:'КР'}] }
     } else if (yr >= 2009) {
-      if (!ans.vm09) q = [ask('vm09','Модель:',[opt('pt','Passat B6-B7, CC, Sharan 2','БК'),opt('tg','Tiguan 1',null),opt('go','Golf 5-6, Jetta, Octavia A5, Yeti, Touran','3Т')])]
+      if (!ans.vm09) q = [ask('vm09','Модель:',[opt('pt','Passat B6-B7, CC, Sharan 2','БК'),opt('tg','Tiguan 1',null),opt('tu','Touran',null),opt('go','Golf 5-6, Jetta, Octavia A5, Yeti','3Т')])]
       else c = [ans.vm09 === 'pt' ? {code:'БК'} : {code:'3Т'}]
     } else if (yr >= 2004) {
       if (!ans.pw2) q = [ask('pw2','Тип усилителя руля?',[opt('g','ГУР — гидравлика',null),opt('e','ЭУР — электро',null)])]
